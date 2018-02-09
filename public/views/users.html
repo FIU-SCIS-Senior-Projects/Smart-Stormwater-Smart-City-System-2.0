@@ -1,0 +1,156 @@
+<div class="content" style="margin-top: 100px">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header" data-background-color="purple">
+            <h4 class="title">Users List</h4>
+            <p class="category">Here is a subtitle for this table</p>
+            <a class="btn-floating pull-right">
+                            <button type="button" class="btn btn-primary btn-floating" data-toggle="modal" data-target="#addUser"><i class="material-icons">add</i></button>
+                        </a>
+          </div>
+          <div class="card-content table-responsive">
+            <table class="table">
+              <thead class="text-primary">
+                <th>Username</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Role</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="sub in mylist" ng-click="setSelected(sub.$id)" ng-class="{selected: sub.$id === idSelected}">
+                  <td>{{sub.email}}</td>
+                  <td>{{sub.firstname + ' ' + sub.lastname}}</td>
+                  <td>{{sub.department}}</td>
+                  <td>{{sub.role}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="card card-plain">
+          <div class="card-header" data-background-color="purple">
+            <h4 class="title">Devices per user</h4>
+            <p class="category">Here is a subtitle for this table</p>
+          </div>
+          <div class="card-content table-responsive">
+            <table class="table table-hover">
+              <thead class="text-primary">
+                <th>Username</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Test</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="sub in devices">
+                  <td>{{sub.email}}</td>
+                  <td>{{sub.firstname + ' ' + sub.lastname}}</td>
+                  <td>{{sub.department}}</td>
+                  <td>{{sub.role}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title">Create User</h4>
+          <p class="category">Complete all fields</p>
+        </div>
+        <div class="card-content">
+          <div ng-show="errorMessage">
+            <span>{{errorMessage}}</span>
+          </div>
+          <form ng-submit="createUser()">
+            <!-- <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Fist Name</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Last Name</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div> -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Email</label>
+                  <input type="email" class="form-control" ng-model="newUser.email" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Password</label>
+                  <input type="password" class="form-control" ng-model="newUser.password" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Role</label>
+                  <input type="text" class="form-control" ng-model="newUser.role" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Department</label>
+                  <input type="text" class="form-control" ng-model="newUser.department" required>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Role</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div> -->
+            <!-- <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group label-floating">
+                                <label class="control-label">City</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Country</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Postal Code</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div> -->
+            <button type="submit" class="btn btn-primary pull-right">Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

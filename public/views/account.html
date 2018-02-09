@@ -1,0 +1,132 @@
+<div class="content" style="margin-top: 100px">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header" data-background-color="purple">
+            <h4 class="title"><span ng-if="user.firstname">{{user.firstname}}'s</span> Profile</h4>
+            <p class="category">Complete your profile</p>
+          </div>
+          <div class="card-content">
+            <div ng-show="errorMessage">
+              <span>{{errorMessage}}</span>
+            </div>
+            <form ng-submit="updateProfile()">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <label class="control-label">First Name</label>
+                    <input type="text" class="form-control" ng-model="user.firstname" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <label class="control-label">Last Name</label>
+                    <input type="text" class="form-control" ng-model="user.lastname" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <label class="control-label">Email</label>
+                    <input type="email" class="form-control" ng-model="user.email" disabled>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <label class="control-label">Role</label>
+                    <input type="text" class="form-control" ng-model="user.role" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group label-floating">
+                    <label class="control-label">Department</label>
+                    <input type="text" class="form-control" ng-model="user.department" disabled>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group label-floating">
+                    <label class="control-label">Phone Number</label>
+                    <input type="text" class="form-control" ng-model="user.phoneNumber" ng-init="user.phoneNumber = ''">
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary pull-center" data-toggle="modal" data-target="#changePassword">Change Password</button>
+              <button type="submit" class="btn btn-primary pull-right">Update Profile</button>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="col-md-4">
+        <div class="card card-profile">
+          <div class="card-avatar">
+            <a href="#pablo">
+                            <img class="img" src="../assets/img/faces/marc.jpg" />
+                        </a>
+          </div>
+          <div class="content">
+            <h6 class="category text-gray">CEO / Co-Founder</h6>
+            <h4 class="card-title">Alec Thompson</h4>
+            <p class="card-content">
+              Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
+            </p>
+            <a href="#pablo" class="btn btn-primary btn-round">Follow</a>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title">Change Password</h4>
+          <p class="category">Complete all fields</p>
+        </div>
+        <div class="card-content">
+          <div ng-show="errorMessage">
+            <span>{{PasswordData.error}}</span>
+          </div>
+          <span>{{PasswordData.error}}</span>
+          <form ng-submit="changePassword()">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Current Password</label>
+                  <input type="password" class="form-control" ng-model="PasswordData.oldpassword" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Password</label>
+                  <input type="password" class="form-control" ng-model="PasswordData.password" ng-change="textChanged()" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Confirm Password</label>
+                  <input type="password" class="form-control" id="password2" ng-model="PasswordData.password2" ng-change="textChanged()" required>
+                </div>
+              </div>
+            </div>
+            <button type="submit" id="UpdatePassword" class="btn btn-primary pull-right">Update Password</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
