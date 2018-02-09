@@ -137,6 +137,14 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       });
     }
 
+    $scope.logout = function () {
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful.
+        }).catch(function(error) {
+            // An error happened.
+        });
+    }
+
     $scope.textChanged = function() {
       if ($scope.PasswordData.password2 == '') {
         if ($scope.PasswordData.password.length > 0 && $scope.PasswordData.password.length < 6) {
