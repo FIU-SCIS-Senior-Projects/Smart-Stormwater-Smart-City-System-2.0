@@ -16,8 +16,8 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       .when('/notifications', {
         templateUrl: 'views/notifications.html'
       })
-      .when('/icons', {
-        templateUrl: 'views/icons.html'
+      .when('/maps', {
+        templateUrl: 'views/maps.html'
       })
       .otherwise({
         templateUrl: 'views/dashboard.html'
@@ -147,12 +147,12 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
 
     $scope.textChanged = function() {
       if ($scope.PasswordData.password2 == '') {
-        if ($scope.PasswordData.password.length > 0 && $scope.PasswordData.password.length < 6) {
+        if (($scope.PasswordData.password.length > 0) && ($scope.PasswordData.password.length < 6)) {
           $scope.PasswordData.error = 'The new password must be at least six characters long';
           document.getElementById("password2").disabled = true;
         } else {
           $scope.PasswordData.error = '';
-          document.getElementById("password2").disabled = false;
+          document.getElementById("password2").disabled = false;          
         }
       } else {
         if ($scope.PasswordData.password == $scope.PasswordData.password2) {
@@ -188,4 +188,13 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     }, {
       'name': 'Super Admin'
     }];
+
+    var devicesRef = firebase.database().ref('devices');
+    var geoFire = new GeoFire(devicesRef);
+    
   })
+
+
+
+
+
