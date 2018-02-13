@@ -1,2 +1,6 @@
 .DS_Store
 node_modules/
+.firebaserc
+firebase.json
+public/404.html
+firebase-debug.log

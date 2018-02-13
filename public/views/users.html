@@ -107,25 +107,13 @@
               <div class="col-md-6">
                 <div class="form-group label-floating">
                   <label class="control-label">Role</label>
-                  <select class="form-control" ng-model="newUser.role">
-                    <option disabled selected></option>
-                    <option>Admin Level 1</option>
-                    <option>Admin Level 2</option>
-                    <option>Regular User</option>
-                    <option>Other</option>
-                  </select>
+                  <input type="text" class="form-control" ng-model="newUser.role" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group label-floating">
                   <label class="control-label">Department</label>
-                  <select class="form-control" ng-model="newUser.department">
-                    <option disabled selected></option>
-                    <option>IT</option>
-                    <option>HR</option>
-                    <option>Accounting</option>
-                    <option>Marketing</option>
-                  </select>
+                  <input type="text" class="form-control" ng-model="newUser.department" required>
                 </div>
               </div>
             </div>
