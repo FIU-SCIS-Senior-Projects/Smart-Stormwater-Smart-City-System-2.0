@@ -152,7 +152,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
           document.getElementById("password2").disabled = true;
         } else {
           $scope.PasswordData.error = '';
-          document.getElementById("password2").disabled = false;          
+          document.getElementById("password2").disabled = false;
         }
       } else {
         if ($scope.PasswordData.password == $scope.PasswordData.password2) {
@@ -191,10 +191,5 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
 
     var devicesRef = firebase.database().ref('devices');
     var geoFire = new GeoFire(devicesRef);
-    
+
   })
-
-
-
-
-
