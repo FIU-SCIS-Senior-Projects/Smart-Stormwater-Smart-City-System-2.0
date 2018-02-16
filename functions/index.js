@@ -1,8 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-var cors = require('cors')({
-  origin: true
-});
+const GeoFire = require('geofire');
+var cors = require('cors')({origin: true});
 admin.initializeApp(functions.config().firebase);
 
 exports.createUser = functions.https.onRequest((req, res) => {
@@ -167,3 +166,43 @@ exports.deleteUser = functions.https.onRequest((req, res) => {
       });
   });
 });
+
+exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event => {
+        
+    const attributes = event.data.attributes;
+    const deviceId = attributes['deviceId'];
+
+    const pubSubMessage = event.data;
+    // Decode the PubSub Message body.
+    const messageBody = pubSubMessage.data ? Buffer.from(pubSubMessage.data, 'base64').toString() : null;
+    const location = messageBody.split(',');
+    location[0] = parseFloat(location[0]);
+    location[1] = parseFloat(location[1]);
+    console.log(location);
+
+    return Promise.all([
+      updateCurrentDataFirebase(deviceId,location)
+    ]);
+  });
+
+/** 
+ * Maintain last status in firebase
+*/
+function updateCurrentDataFirebase(deviceId, location) {
+  const geoFire = new GeoFire(admin.database().ref('devices'));
+  return geoFire.set(deviceId, location).then(function() {
+     console.log("Provided key has been added to GeoFire");
+  }, function(error) {
+     console.log("Error: " + error);
+  });
+}
+
+ 
+
+
+
+
+
+
+
+
