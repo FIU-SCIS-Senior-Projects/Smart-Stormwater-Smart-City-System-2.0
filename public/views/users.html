@@ -4,8 +4,28 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header" data-background-color="purple">
-            <h4 class="title">Users List</h4>
-            <p class="category">Here is a subtitle for this table</p>
+            <div class="row">
+              <div class="col-md-6">
+                <h4 class="title">Users List</h4>
+                <p class="category">View and modify users' information</p>
+              </div>
+              <div class="col-md-6">
+                <div class="dropdown pull-right">
+                  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <b>Actions</b>
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a href="#" data-toggle="modal" data-target="#modifyUser">Assign Devices</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#deleteUser">Delete</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li>
+                      <label><input type="checkbox"  ng-model="multiselect"><b>  Multiselect</b></label>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
             <a class="btn-floating pull-right">
                             <button type="button" class="btn btn-primary btn-floating" data-toggle="modal" data-target="#addUser"><i class="material-icons">add</i></button>
                         </a>
@@ -13,44 +33,59 @@
           <div class="card-content table-responsive">
             <table class="table">
               <thead class="text-primary">
+                <th ng-if="multiselect">Selected</th>
                 <th>Username</th>
                 <th>Name</th>
                 <th>Department</th>
                 <th>Role</th>
+                <th>Modify User</th>
               </thead>
               <tbody>
-                <tr ng-repeat="sub in mylist" ng-click="setSelected(sub.$id)" ng-class="{selected: sub.$id === idSelected}">
+                <tr ng-repeat="sub in subusers" ng-click="setSelected(sub.$id)" ng-class="{selected: sub.$id === idSelected && !multiselect}">
+                  <td ng-if="multiselect"><input type="checkbox" id="test"></td>
                   <td>{{sub.email}}</td>
                   <td>{{sub.firstname + ' ' + sub.lastname}}</td>
                   <td>{{sub.department}}</td>
                   <td>{{sub.role}}</td>
+                  <!-- <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modifyUser">Modify</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteUser">Delete</button></td> -->
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <span class="fa fa-bars"></span>
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#" data-toggle="modal" data-target="#modifyUser">Modify</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#deleteUser">Delete</a></li>
+                      </ul>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" ng-if="!multiselect">
         <div class="card card-plain">
           <div class="card-header" data-background-color="purple">
             <h4 class="title">Devices per user</h4>
-            <p class="category">Here is a subtitle for this table</p>
+            <p class="category">Assign or unassign devices to the selected user</p>
+            <div ng-if="idSelected"><a class="btn-floating pull-right">
+                            <button type="button" class="btn btn-primary btn-floating" data-toggle="modal" data-target="#addDevice"><i class="material-icons">add</i></button>
+                        </a>
+            </div>
           </div>
           <div class="card-content table-responsive">
             <table class="table table-hover">
               <thead class="text-primary">
-                <th>Username</th>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Role</th>
-                <th>Test</th>
+                <th>Device Name</th>
+                <th>Location</th>
               </thead>
               <tbody>
-                <tr ng-repeat="sub in devices">
-                  <td>{{sub.email}}</td>
-                  <td>{{sub.firstname + ' ' + sub.lastname}}</td>
-                  <td>{{sub.department}}</td>
-                  <td>{{sub.role}}</td>
+                <tr ng-repeat="device in devices">
+                  <td>{{device.name}}</td>
+                  <td>{{device.location}}</td>
                 </tr>
               </tbody>
             </table>
@@ -75,20 +110,6 @@
             <span>{{errorMessage}}</span>
           </div>
           <form ng-submit="createUser()">
-            <!-- <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group label-floating">
-                                <label class="control-label">Fist Name</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group label-floating">
-                                <label class="control-label">Last Name</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                    </div> -->
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group label-floating">
@@ -129,35 +150,160 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group label-floating">
-                                <label class="control-label">Role</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                    </div> -->
-            <!-- <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group label-floating">
-                                <label class="control-label">City</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group label-floating">
-                                <label class="control-label">Country</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group label-floating">
-                                <label class="control-label">Postal Code</label>
-                                <input type="text" class="form-control">
-                            </div>
-                        </div>
-                    </div> -->
             <button type="submit" class="btn btn-primary pull-right">Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modifyUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title"><span ng-if="selectedUser.firstname">{{selectedUser.firstname}}'s</span> Profile</h4>
+          <p class="category">Update user's profile</p>
+        </div>
+        <div class="card-content">
+          <div ng-show="errorMessage">
+            <span>{{errorMessage}}</span>
+          </div>
+          <form ng-submit="updateSubuser(selectedUser.$id)">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">First Name</label>
+                  <input type="text" class="form-control" ng-model="selectedUser.firstname">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Last Name</label>
+                  <input type="text" class="form-control" ng-model="selectedUser.lastname">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Email</label>
+                  <input type="email" class="form-control" ng-model="selectedUser.email" disabled>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Role</label>
+                  <select class="form-control" ng-model="selectedUser.role">
+                    <option disabled selected></option>
+                    <option>Admin Level 1</option>
+                    <option>Admin Level 2</option>
+                    <option>Regular User</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Department</label>
+                  <select class="form-control" ng-model="selectedUser.department">
+                    <option disabled selected></option>
+                    <option>IT</option>
+                    <option>HR</option>
+                    <option>Accounting</option>
+                    <option>Marketing</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group label-floating">
+                  <label class="control-label">Phone Number</label>
+                  <input type="text" class="form-control" ng-model="selectedUser.phoneNumber" ng-init="selectedUser.phoneNumber = ''">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary pull-right">Update Profile</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title"><span> Are you sure you want to delete {{selectedUser.firstname}}'s profile?</span></h4>
+          <p class="category">Changes can not be undone</p>
+        </div>
+        <div class="card-content">
+          <div ng-show="errorMessage">
+            <span>{{errorMessage}}</span>
+          </div>
+          <form ng-submit="deleteSubuser(selectedUser.$id)">
+            <button type="submit" class="btn btn-primary pull-right">Delete Profile</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addDevice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title"><span> Assign devices to {{selectedUser.firstname}}</span></h4>
+          <!-- <p class="category">Changes can not be undone</p> -->
+        </div>
+        <div class="card-content">
+          <form ng-submit="assignDevices()">
+            <!-- <div class="row">
+              <label ng-repeat="dev in myDevices">
+                <input
+                  type="checkbox"
+                  value="{{dev.name}}"
+                  ng-model="dev.selected"
+                > {{dev.name}}
+              </label>
+            </div> -->
+            <!-- <div class="row">
+              <div class="col-md-6">
+                <label ng-repeat="dev in myDevices">
+                  <input
+                    type="checkbox"
+                    value="{{dev.name}}"
+                    ng-model="dev.selected"
+                  > {{dev.name}}
+                </label>
+              </div>
+            </div> -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="row" ng-repeat="dev in myDevices">
+                  <label>
+                  <input
+                    type="checkbox"
+                    value="{{dev.name}}"
+                    ng-model="dev.selected"
+                  > {{dev.name}}
+                </label>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary pull-right">Assign</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             <div class="clearfix"></div>
           </form>

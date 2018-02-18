@@ -38,7 +38,7 @@ exports.createUser = functions.https.onRequest((req, res) => {
           });
 
         var subuserRef = db.ref("subusers");
-        subuserRef.child(req.body.parentid + "/" + userRecord.uid).set(user, function(error){
+        subuserRef.child(req.body.parentid + "/" + userRecord.uid).set(user, function(error) {
           if (error) {
             console.log("New user could not be saved to subusers ", error);
           } else {
@@ -157,9 +157,12 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
 
 exports.deleteUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
-    admin.auth().deleteUser(uid)
+    admin.auth().deleteUser(req.body.uid)
       .then(function() {
         console.log("Successfully deleted user");
+        res.json({
+          status: "ok"
+        });
       })
       .catch(function(error) {
         console.log("Error deleting user:", error);
