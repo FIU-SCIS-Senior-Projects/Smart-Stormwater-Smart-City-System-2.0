@@ -9,22 +9,22 @@
                 <h4 class="title">Users List</h4>
                 <p class="category">View and modify users' information</p>
               </div>
-              <div class="col-md-6">
+              <!-- <div class="col-md-6">
                 <div class="dropdown pull-right">
                   <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <b>Actions</b>
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a href="#" data-toggle="modal" data-target="#modifyUser">Assign Devices</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#addDevice">Assign Devices</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#deleteUser">Delete</a></li>
                     <li role="separator" class="divider"></li>
                     <li>
-                      <label><input type="checkbox"  ng-model="multiselect"><b>  Multiselect</b></label>
+                      <label><input type="checkbox"  value="{{multiselect.selected}}" ng-model="multiselect.selected" ng-change="unselectSubusers()"><b>  Multiselect</b></label>
                     </li>
                   </ul>
                 </div>
-              </div>
+              </div> -->
             </div>
             <a class="btn-floating pull-right">
                             <button type="button" class="btn btn-primary btn-floating" data-toggle="modal" data-target="#addUser"><i class="material-icons">add</i></button>
@@ -33,7 +33,7 @@
           <div class="card-content table-responsive">
             <table class="table">
               <thead class="text-primary">
-                <th ng-if="multiselect">Selected</th>
+                <th ng-if="multiselect.selected">Selected</th>
                 <th>Username</th>
                 <th>Name</th>
                 <th>Department</th>
@@ -41,8 +41,8 @@
                 <th>Modify User</th>
               </thead>
               <tbody>
-                <tr ng-repeat="sub in subusers" ng-click="setSelected(sub.$id)" ng-class="{selected: sub.$id === idSelected && !multiselect}">
-                  <td ng-if="multiselect"><input type="checkbox" id="test"></td>
+                <tr ng-repeat="sub in subusers" ng-click="setSelected(sub.$id)" ng-class="{selected: sub.$id === idSelected && !multiselect.selected}">
+                  <td ng-if="multiselect.selected"><input type="checkbox" id="test" value="{{sub.selected}}" ng-model="sub.selected"></td>
                   <td>{{sub.email}}</td>
                   <td>{{sub.firstname + ' ' + sub.lastname}}</td>
                   <td>{{sub.department}}</td>
@@ -66,7 +66,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-12" ng-if="!multiselect">
+      <div class="col-md-12" ng-if="!multiselect.selected">
         <div class="card card-plain">
           <div class="card-header" data-background-color="purple">
             <h4 class="title">Devices per user</h4>
@@ -81,11 +81,13 @@
               <thead class="text-primary">
                 <th>Device Name</th>
                 <th>Location</th>
+                <th>Remove Device</th>
               </thead>
               <tbody>
                 <tr ng-repeat="device in devices">
                   <td>{{device.name}}</td>
                   <td>{{device.location}}</td>
+                  <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#removeDevice" ng-click="selectedDevice.id=device.$id">Remove</button></td>
                 </tr>
               </tbody>
             </table>
@@ -251,6 +253,28 @@
           </div>
           <form ng-submit="deleteSubuser(selectedUser.$id)">
             <button type="submit" class="btn btn-primary pull-right">Delete Profile</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <div class="clearfix"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="removeDevice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title"><span> Are you sure you want to revoke {{selectedUser.firstname}}'s access to this device?</span></h4>
+        </div>
+        <div class="card-content">
+          <div ng-show="errorMessage">
+            <span>{{errorMessage}}</span>
+          </div>
+          <form ng-submit="unassignDevice()">
+            <button type="submit" class="btn btn-primary pull-right">Remove</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             <div class="clearfix"></div>
           </form>

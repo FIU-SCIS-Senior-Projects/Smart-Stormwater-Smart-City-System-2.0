@@ -1,7 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const GeoFire = require('geofire');
-var cors = require('cors')({origin: true});
+var cors = require('cors')({
+  origin: true
+});
 admin.initializeApp(functions.config().firebase);
 
 exports.createUser = functions.https.onRequest((req, res) => {
@@ -26,7 +28,8 @@ exports.createUser = functions.https.onRequest((req, res) => {
           email: req.body.email,
           role: req.body.role,
           department: req.body.department,
-          parentid: req.body.parentid
+          parentid: req.body.parentid,
+          phoneNumber: ''
         };
         userRef.child(userRecord.uid)
           .set(user, function(error) {
@@ -167,45 +170,69 @@ exports.deleteUser = functions.https.onRequest((req, res) => {
       .catch(function(error) {
         console.log("Error deleting user:", error);
       });
+
+    // var db = admin.database();
+    //
+    // var listToDelete = req.body.listToDelete;
+    // var parentId = req.body.parentId;
+    //
+    // var usersRef = db.ref("users");
+    // var subuserRef = db.ref("subusers/" + parentId);
+    //
+    // var usersRemaining = listToDelete.length;
+    //
+    // for (var i = 0; i < listToDelete.length; i++) {
+    //   var id = listToDelete[i].$id;
+    //   admin.auth().deleteUser(id)
+    //     .then(function() {
+    //       console.log("Successfully deleted user");
+    //       usersRef.child(id).remove().then(function() {
+    //         console.log("Successfully deleted user from Users node");
+    //         subuserRef.child(id).remove().then(function() {
+    //           console.log("Successfully deleted user from Subusers node");
+    //
+    //           usersRemaining -= 1;
+    //           if (usersRemaining <= 0) {
+    //             res.json({
+    //               status: "ok"
+    //             });
+    //           }
+    //         });
+    //       });
+    //     })
+    //     .catch(function(error) {
+    //       console.log("Error deleting user:", error);
+    //     });
+    // }
   });
 });
 
 exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event => {
-        
-    const attributes = event.data.attributes;
-    const deviceId = attributes['deviceId'];
 
-    const pubSubMessage = event.data;
-    // Decode the PubSub Message body.
-    const messageBody = pubSubMessage.data ? Buffer.from(pubSubMessage.data, 'base64').toString() : null;
-    const location = messageBody.split(',');
-    location[0] = parseFloat(location[0]);
-    location[1] = parseFloat(location[1]);
-    console.log(location);
+  const attributes = event.data.attributes;
+  const deviceId = attributes['deviceId'];
 
-    return Promise.all([
-      updateCurrentDataFirebase(deviceId,location)
-    ]);
-  });
+  const pubSubMessage = event.data;
+  // Decode the PubSub Message body.
+  const messageBody = pubSubMessage.data ? Buffer.from(pubSubMessage.data, 'base64').toString() : null;
+  const location = messageBody.split(',');
+  location[0] = parseFloat(location[0]);
+  location[1] = parseFloat(location[1]);
+  console.log(location);
 
-/** 
+  return Promise.all([
+    updateCurrentDataFirebase(deviceId, location)
+  ]);
+});
+
+/**
  * Maintain last status in firebase
-*/
+ */
 function updateCurrentDataFirebase(deviceId, location) {
   const geoFire = new GeoFire(admin.database().ref('devices'));
   return geoFire.set(deviceId, location).then(function() {
-     console.log("Provided key has been added to GeoFire");
+    console.log("Provided key has been added to GeoFire");
   }, function(error) {
-     console.log("Error: " + error);
+    console.log("Error: " + error);
   });
 }
-
- 
-
-
-
-
-
-
-
-
