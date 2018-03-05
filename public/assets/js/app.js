@@ -15,7 +15,8 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
         templateUrl: 'views/users.html'
       })
       .when('/devices', {
-        templateUrl: 'views/devices.html'
+        templateUrl: 'views/devices.html',
+        controller: 'DeviceCtrl as deviceCtrl'
       })
       .when('/notifications', {
         templateUrl: 'views/notifications.html'
@@ -227,6 +228,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     }
 
     var devicesRef = null;
+    var selectedUser = null;
 
     $scope.idSelected = null;
 
@@ -235,7 +237,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     };
 
     $scope.setSelected = function(idSelected) {
-      var selectedUser = $scope.subusers.$getRecord(idSelected);
+      selectedUser = $scope.subusers.$getRecord(idSelected);
       $scope.selectedUser = selectedUser;
       $scope.idSelected = idSelected;
 
@@ -261,6 +263,18 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
                   console.log("Successfully assigned devices");
                 }
               });
+            var deviceusersRef = firebase.database().ref('deviceusers/' + myDevices[i].$id);
+            var u = {
+              firstname: selectedUser.firstname,
+              lastname: selectedUser.lastname,
+              email: selectedUser.email,
+              role: selectedUser.role,
+              department: selectedUser.department,
+              parentid: selectedUser.parentid,
+              phoneNumber: selectedUser.phoneNumber
+            };
+            deviceusersRef.child(selectedUser.$id)
+              .set(u);
           }
         }
         for (var i = 0; i < myDevices.length; i++) {
@@ -272,7 +286,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
 
     $scope.unassignDevice = function() {
       if (devicesRef != null) {
-        devicesRef.child($scope.selectedDevice.id).remove().then(function(){
+        devicesRef.child($scope.selectedDevice.id).remove().then(function() {
           console.log("Successfully removed device");
           $scope.selectedDevice.id = '';
           $scope.close();
@@ -463,5 +477,26 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       });
       $scope.marker.setMap($scope.map);
     }
+  })
+  .controller('DeviceCtrl', function($firebaseArray, $firebaseObject) {
+    var deviceCtrl = this;
+
+    var currentUser = firebase.auth().currentUser;
+
+    var myDevicesRef = firebase.database().ref('userdevices/' + currentUser.uid);
+    var myDevices = $firebaseArray(myDevicesRef);
+    deviceCtrl.myDevices = myDevices;
+
+
+    var usersRef = null;
+
+    deviceCtrl.idSelected = null;
+
+    deviceCtrl.setSelected = function(idSelected) {
+      deviceCtrl.idSelected = idSelected;
+
+      usersRef = firebase.database().ref('deviceusers/' + idSelected);
+      deviceCtrl.users = $firebaseArray(usersRef);
+    };
 
   })
