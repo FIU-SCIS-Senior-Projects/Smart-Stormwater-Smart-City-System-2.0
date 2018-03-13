@@ -5,18 +5,27 @@
                 <div class="card">
                     <div class="card-header" data-background-color="purple">
                         <h4 class="title">Devices List</h4>
+                        <a class="btn-floating pull-right">
+                            <button type="button" class="btn btn-primary btn-floating" data-toggle="modal"  data-target="#addDevice"><i class="material-icons">add</i></button>
+                        </a>
                         <p class="category">{{deviceCtrl.test}}</p>
                     </div>
                     <div class="card-content table-responsive">
                         <table class="table">
                             <thead class="text-primary">
-                                <th>Name</th>
-                                <th>Location</th>
+                                <th>ID</th>
+                                <th>Battery</th>
+                                <th>Fill Level</th>
+                                <th>Last Update</th>
+                                <th>Position</th>
                             </thead>
                             <tbody>
                               <tr ng-repeat="dev in deviceCtrl.myDevices" ng-click="deviceCtrl.setSelected(dev.$id)" ng-class="{selected: dev.$id === deviceCtrl.idSelected}">
-                                <td>{{dev.name}}</td>
-                                <td>{{dev.location}}</td>
+                                <td>{{dev.$id}}</td>
+                                <td>{{dev.battery}}</td>
+                                <td>{{dev.filled}}</td>
+                                <td>{{dev.lastseen | date}}</td>
+                                <td>{{dev.position}}</td>
                               </tr>
                             </tbody>
                         </table>
@@ -26,7 +35,7 @@
             <div class="col-md-12">
                 <div class="card card-plain">
                     <div class="card-header" data-background-color="purple">
-                        <h4 class="title">Users per divices</h4>
+                        <h4 class="title">Users per device</h4>
                         <p class="category">Here is a subtitle for this table</p>
                     </div>
                     <div class="card-content table-responsive">
@@ -51,4 +60,52 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Device  Modal -->
+<div class="modal fade" id="addDevice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-header" data-background-color="purple">
+          <h4 class="title">Create DeviceType</h4>
+          <p class="category">Or add device for current type</p>
+        </div>
+        <div class="card-content">
+          <div ng-show="deviceCtrl.errorMessage"><span>{{deviceCtrl.errorMessage}}</span></div>
+            <form ng-submit="deviceCtrl.addDevice()">
+                <div class="row">
+                    <!-- <div class="col-md-6">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Choose Device Type</label>
+                            <select class="form-control category" ng-model="deviceForm"
+                            ng-options="type.$id for type in devicesType" ng-disabled="newDeviceType">
+                              <option selected></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group label-floating">
+                        <label class="control-label">New Device Type</label>
+                        <input type="text" class="form-control" ng-model="newDeviceType" ng-disabled="deviceForm">
+                      </div>
+                    </div> -->
+                    <div class="col-md-6">
+                      <div class="form-group label-floating">
+                        <label class="control-label">Device Id</label>
+                        <input type="text" class="form-control" ng-model="deviceCtrl.newDeviceId" ng-disabled="!deviceCtrl.disabled">
+                      </div>
+                    </div>
+                    <div class="col-md-6"><br><br>
+                        <label><input type="checkbox" ng-model="deviceCtrl.checkedId" ng-change="deviceCtrl.dis()" ng-true-value="'Include device own Id'" ng-false-value="'Auto generate Id'"> {{deviceCtrl.checkedId}}</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary pull-right">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

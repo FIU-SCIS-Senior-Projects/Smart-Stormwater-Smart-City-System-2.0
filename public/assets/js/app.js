@@ -12,7 +12,8 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
         templateUrl: 'views/account.html'
       })
       .when('/users', {
-        templateUrl: 'views/users.html'
+        templateUrl: 'views/users.html',
+        controller: 'UserCtrl as userCtrl'
       })
       .when('/devices', {
         templateUrl: 'views/devices.html',
@@ -66,80 +67,9 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     };
     $scope.PasswordData = PasswordData;
 
-    $scope.newUser = {
-      email: '',
-      password: '',
-      role: '',
-      department: '',
-      parentid: currentUser.uid
-    };
-
-    // console.log(currentUser.uid);
-    /*
-    if (currentUser != null) {
-      $scope.user.email = currentUser.email;
-      $scope.user.uid = currentUser.uid;
-    }
-    */
-
     var usersRef = firebase.database().ref('users');
     var user = $firebaseObject(usersRef.child(currentUser.uid));
     $scope.user = user;
-
-    var multiselect = {
-      selected: false
-    };
-    $scope.multiselect = multiselect;
-
-    var subuserRef = firebase.database().ref('subusers/' + currentUser.uid);
-    var subusers = $firebaseArray(subuserRef);
-    for (var i = 0; i < subusers.length; i++) {
-      subusers.selected = false;
-    }
-    $scope.subusers = subusers;
-
-    var myDevicesRef = firebase.database().ref('userdevices/' + currentUser.uid);
-    var myDevices = $firebaseArray(myDevicesRef);
-
-    for (var i = 0; i < myDevices.length; i++) {
-      myDevices[i].selected = false;
-    }
-
-    $scope.myDevices = myDevices;
-
-    $scope.createUser = function() {
-      $(document.body).css({
-        'cursor': 'wait'
-      });
-      $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/createUser", $scope.newUser)
-        .then(function success(response) {
-          console.log("Success!!!");
-          var email = $scope.newUser.email;
-          console.log(email);
-          firebase.auth().sendPasswordResetEmail(email).then(function() {
-            console.log("Reset password email sent");
-          }).catch(function(error) {
-            console.log(error);
-          });
-          $scope.newUser = {
-            email: '',
-            password: '',
-            role: '',
-            department: '',
-            parentid: currentUser.uid
-          };
-          $scope.close();
-          $(document.body).css({
-            'cursor': 'default'
-          });
-        }, function error(error) {
-          console.log(error);
-          $scope.errorMessage = error.data;
-          $(document.body).css({
-            'cursor': 'default'
-          });
-        });
-    };
 
     $scope.updateProfile = function() {
       usersRef.child(currentUser.uid)
@@ -227,276 +157,75 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       $('#removeDevice').modal('hide');
     }
 
-    var devicesRef = null;
-    var selectedUser = null;
-
-    $scope.idSelected = null;
-
-    $scope.selectedDevice = {
-      id: ''
-    };
-
-    $scope.setSelected = function(idSelected) {
-      selectedUser = $scope.subusers.$getRecord(idSelected);
-      $scope.selectedUser = selectedUser;
-      $scope.idSelected = idSelected;
-
-      //var devicesRef = firebase.database().ref('subusers/' + idSelected);
-      devicesRef = firebase.database().ref('userdevices/' + idSelected);
-      $scope.devices = $firebaseArray(devicesRef);
-    };
-
-    $scope.assignDevices = function() {
-      if (devicesRef != null) {
-        for (var i = 0; i < myDevices.length; i++) {
-          if (myDevices[i].selected) {
-            var dev = {};
-            dev = {
-              name: myDevices[i].name,
-              location: myDevices[i].location
-            };
-            devicesRef.child(myDevices[i].$id)
-              .set(dev, function(error) {
-                if (error) {
-                  console.log("Devices could not be assigned", error);
-                } else {
-                  console.log("Successfully assigned devices");
-                }
-              });
-            var deviceusersRef = firebase.database().ref('deviceusers/' + myDevices[i].$id);
-            var u = {
-              firstname: selectedUser.firstname,
-              lastname: selectedUser.lastname,
-              email: selectedUser.email,
-              role: selectedUser.role,
-              department: selectedUser.department,
-              parentid: selectedUser.parentid,
-              phoneNumber: selectedUser.phoneNumber
-            };
-            deviceusersRef.child(selectedUser.$id)
-              .set(u);
-          }
-        }
-        for (var i = 0; i < myDevices.length; i++) {
-          myDevices[i].selected = false;
-        }
-        $scope.close();
-      }
-    };
-
-    $scope.unassignDevice = function() {
-      if (devicesRef != null) {
-        devicesRef.child($scope.selectedDevice.id).remove().then(function() {
-          console.log("Successfully removed device");
-          $scope.selectedDevice.id = '';
-          $scope.close();
-        });
-      }
-    };
-
-    $scope.updateSubuser = function(id) {
-      $scope.subusers.$save($scope.selectedUser).then(function() {
-        console.log("saved");
-        console.log(id);
-        usersRef.child(id)
-          .update({
-            'firstname': $scope.selectedUser.firstname,
-            'lastname': $scope.selectedUser.lastname,
-            'phoneNumber': $scope.selectedUser.phoneNumber,
-            'role': $scope.selectedUser.role,
-            'department': $scope.selectedUser.department
-          });
-        $scope.close();
-      });
-    };
-
-    $scope.deleteSubuser = function(id) {
-      $(document.body).css({
-        'cursor': 'wait'
-      });
-
-      // if ($scope.multiselect.selected) {
-      //   var listToDelete = [];
-      //   for (var i = 0; i < $scope.subusers.length; i++) {
-      //     if ($scope.subusers[i].selected) {
-      //       console.log("adding to delete");
-      //       listToDelete.push($scope.subusers[i]);
-      //     }
-      //   }
-      //   var body = {
-      //     listToDelete: listToDelete,
-      //     parentId: currentUser.uid
-      //   };
-      //   $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/deleteUser", body)
-      //     .then(function success(response) {
-      //       console.log("Success!!!");
-      //       $scope.close();
-      //       $(document.body).css({
-      //         'cursor': 'default'
-      //       });
-      //     });
-      //
-      //   // for (var i = 0; i < listToDelete.length; i++) {
-      //   //   id = listToDelete[i].$id;
-      //   //   var sel = $scope.subusers.$getRecord(id);
-      //   //   var sub = {
-      //   //     'uid': id
-      //   //   };
-      //   //
-      //   //   console.log("id to delete ", id);
-      //   //   $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/deleteUser", sub)
-      //   //     .then(function success(response) {
-      //   //       console.log("Success!!!");
-      //   //       $scope.subusers.$remove(sel).then(function() {
-      //   //         console.log("user deleted from subusers");
-      //   //         usersRef.child(id).remove();
-      //   //         console.log("user deleted from users");
-      //   //         $scope.close();
-      //   //       });
-      //   //       //need to delete from subusers node and assign subusers to parent
-      //   //       $scope.close();
-      //   //     }, function error(error) {
-      //   //       console.log(error);
-      //   //       $scope.errorMessage = error.data;
-      //   //     });
-      //   // }
-      // } else {
-      var sub = {
-        'uid': id
-      };
-      $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/deleteUser", sub)
-        .then(function success(response) {
-          console.log("Success!!!");
-          $scope.subusers.$remove($scope.selectedUser).then(function() {
-            console.log("user deleted from subusers");
-            usersRef.child(id).remove();
-            console.log("user deleted from users");
-            $scope.close();
-          });
-          //need to delete from subusers node and assign subusers to parent
-          $scope.close();
-          $(document.body).css({
-            'cursor': 'default'
-          });
-        }, function error(error) {
-          console.log(error);
-          $scope.errorMessage = error.data;
-          $(document.body).css({
-            'cursor': 'default'
-          });
-        });
-      //}
-
-
-    };
-
-    $scope.unselectSubusers = function() {
-      for (var i = 0; i < $scope.subusers.length; i++) {
-        $scope.subusers[i].selected = false;
-      }
-    };
-
-    $scope.roles = [{
-      'name': 'User'
-    }, {
-      'name': 'Admin'
-    }, {
-      'name': 'Super Admin'
-    }];
-
   })
-  .controller('MapCtrl', function($scope, $http, $firebaseArray, $firebaseObject) {
-    // GeoFire Map Settings
-    var devicesRef = firebase.database().ref('devices');
-    var geoFire = new GeoFire(devicesRef);
-    $scope.position = {
-      lat: '',
-      lng: ''
-    };
-    $scope.infowindow;
-    $scope.marker;
-    $scope.map;
+  .controller('MapCtrl', function($scope, $firebaseArray) {
+    $scope.devicesRef = $firebaseArray(firebase.database().ref('devicetype/Stormwater'));
+  	$scope.position = {lat:'', lng:''};
+  	$scope.infowindow;
+  	$scope.markers = [];
+  	$scope.map;
 
-    geoFire.get("The_First_Test_Device").then(function(location) {
-      $scope.position.lat = location[0];
-      $scope.position.lng = location[1];
-      $scope.initMap();
-    }, function(error) {
-      console.log("Error: " + error);
-    });
+  	$scope.devicesRef.$loaded().then(function() {
+  		$scope.initMap();
+    	 	angular.forEach($scope.devicesRef, function(value, key){
+  			sensorMarker(value);
+    	 	})
+    	})
 
-    devicesRef.child('The_First_Test_Device').on('value', snapshot => {
-      geoFire.get("The_First_Test_Device").then(function(location) {
-        $scope.position.lat = location[0];
-        $scope.position.lng = location[1];
-        if ($scope.marker) {
-          $scope.marker.setMap(null);
-        }
-        $scope.marker = new google.maps.Marker({
-          position: $scope.position,
-          title: "The_First_Test_Device"
-        });
-        $scope.infowindow = new google.maps.InfoWindow({
-          content: "Lat:" + $scope.position.lat + ", Long:" + $scope.position.lng
-        });
-        $scope.marker.addListener('click', function() {
-          $scope.infowindow.open($scope.map, $scope.marker);
-        });
-        $scope.marker.setMap($scope.map);
-      });
-    });
+    	firebase.database().ref('devicetype/Stormwater').on('child_changed', function(snapshot) {
+    		// console.log($scope.markers.length)
+    		for (var i = 0; i <= $scope.markers.length; i++) {
+    			if ($scope.markers[i].title == snapshot.key) {
+    				info($scope.markers[i], snapshot.val());
+    			}
+    		}
+  	});
 
-    $scope.initMap = function() {
-      $scope.map = new google.maps.Map(document.getElementById('map'), {
-        center: $scope.position,
-        zoom: 13,
-        styles: [{
-            featureType: 'poi',
-            stylers: [{
-              visibility: 'off'
-            }] // Turn off points of interest.
-          },
-          {
-            featureType: 'transit.station',
-            stylers: [{
-              visibility: 'off'
-            }] // Turn off bus stations, train stations, etc.
-          }
-        ],
-        disableDoubleClickZoom: true
-      });
-      $scope.marker = new google.maps.Marker({
-        position: $scope.position,
-        title: "The_First_Test_Device"
-      });
-      $scope.infowindow = new google.maps.InfoWindow({
-        content: "Lat:" + $scope.position.lat + ", Long:" + $scope.position.lng
-      });
-      $scope.marker.addListener('click', function() {
-        $scope.infowindow.open($scope.map, $scope.marker);
-      });
-      $scope.marker.setMap($scope.map);
-    }
-  })
-  .controller('DeviceCtrl', function($firebaseArray, $firebaseObject) {
-    var deviceCtrl = this;
+    	function sensorMarker(value) {
+    		$scope.position.lat = value.position[0];
+  		$scope.position.lng = value.position[1];
+  		var geocoder = new google.maps.Geocoder;
+    	 	var marker = new google.maps.Marker({
+  	     	position: new google.maps.LatLng($scope.position.lat, $scope.position.lng),
+  	     	map: $scope.map,
+  	     	// animation: google.maps.Animation.DROP,
+  	     	title: value.$id
+  	   	});
+  	 	info(marker, value);
+  	 	$scope.markers.push(marker);
+    	}
 
-    var currentUser = firebase.auth().currentUser;
-
-    var myDevicesRef = firebase.database().ref('userdevices/' + currentUser.uid);
-    var myDevices = $firebaseArray(myDevicesRef);
-    deviceCtrl.myDevices = myDevices;
+    	function info(marker, value) {
+    		$scope.position.lat = value.position[0];
+  		$scope.position.lng = value.position[1];
+    		var geocoder = new google.maps.Geocoder;
+    		geocoder.geocode({'location': {lat:$scope.position.lat, lng:$scope.position.lng}}, (results, status) => {
+  	   		var info = `<strong>Address</strong>: ${results[0].formatted_address}
+  	   		 <br> <strong>Filled</strong>: ${value.filled}%
+  	   		 <br> <strong>Battery</strong>: ${value.battery}%`;
+  	   		var infowindow = new google.maps.InfoWindow({});
+      		marker.set('content', info);
+      		marker.addListener('click', function() {
+      			infowindow.setContent(this.get('content'));
+         			infowindow.open($scope.map, marker);
+      		});
+      	});
+    	}
 
 
-    var usersRef = null;
-
-    deviceCtrl.idSelected = null;
-
-    deviceCtrl.setSelected = function(idSelected) {
-      deviceCtrl.idSelected = idSelected;
-
-      usersRef = firebase.database().ref('deviceusers/' + idSelected);
-      deviceCtrl.users = $firebaseArray(usersRef);
-    };
-
+  	$scope.initMap = function() {
+  	  	$scope.map = new google.maps.Map(document.getElementById('map'), {
+  	  	  	center: new google.maps.LatLng(25.7498, -80.2157),
+  	  	  	zoom: 12,
+  	  	  	styles: [{
+  	  	  		featureType: 'poi',
+  	  	    	stylers: [{ visibility: 'off' }]  // Turn off points of interest.
+  	  	  	},
+  	  	  	{
+  	  	    	featureType: 'transit.station',
+  	  	    	stylers: [{ visibility: 'off' }]  // Turn off bus stations, train stations, etc.
+  	  	  	}],
+  	  	  	disableDoubleClickZoom: true
+  	  	});
+  	}
   })
