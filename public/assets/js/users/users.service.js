@@ -61,7 +61,7 @@ angular.module('sopApp')
 
       return new Promise((resolve, reject) => {
         var sub = {
-          'uid': id
+          uid: id
         };
         $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/deleteUser", sub)
           .then(function success(response) {

@@ -1,5 +1,5 @@
 angular.module('sopApp')
-  .factory('Devices', function($firebaseArray, $firebaseObject){
+  .factory('Devices', function($firebaseArray, $firebaseObject) {
 
     var currentUser = firebase.auth().currentUser;
 
@@ -11,72 +11,83 @@ angular.module('sopApp')
     var userdevicesRef = firebase.database().ref('userdevices');
 
     //turn into Promise
-    function assignDevices(selectedUser){
-        for (var i = 0; i < userDevices.length; i++) {
-          if (userDevices[i].selected) {
-            var dev = {};
-            dev = {
-              name: userDevices[i].$id,
-              location: userDevices[i].position
-            };
-            userdevicesRef.child(selectedUser.$id).child(userDevices[i].$id)
-              .set(dev, function(error) {
-                if (error) {
-                  console.log("Devices could not be assigned to userdevices node", error);
-                } else {
-                  console.log("Successfully assigned devices to userdevices node");
-                }
-              });
-            var u = {
-              firstname: selectedUser.firstname,
-              lastname: selectedUser.lastname,
-              email: selectedUser.email,
-              role: selectedUser.role,
-              department: selectedUser.department,
-              phoneNumber: selectedUser.phoneNumber
-            };
-            usersRef.child(userDevices[i].$id).child(selectedUser.$id)
-              .set(u, function(error) {
-                if (error) {
-                  console.log("Devices could not be assigned to deviceusers node", error);
-                } else {
-                  console.log("Successfully assigned devices to deviceusers node");
-                }
-              });
-          }
+    function assignDevices(selectedUser, subusers, multiselect) {
+      if (multiselect) {
+        for (var i = 0; i < subusers.length; i++) {
+          if (subusers[i].selected)
+            assign(subusers[i]);
         }
-        for (var i = 0; i < userDevices.length; i++) {
-          userDevices[i].selected = false;
+      } else {
+        assign(selectedUser);
+      }
+      for (var i = 0; i < userDevices.length; i++) {
+        userDevices[i].selected = false;
+      }
+    }
+
+    function assign(selectedUser) {
+      for (var i = 0; i < userDevices.length; i++) {
+        if (userDevices[i].selected) {
+          var dev = {};
+          dev = {
+            name: userDevices[i].$id,
+            location: userDevices[i].position
+          };
+          userdevicesRef.child(selectedUser.$id).child(userDevices[i].$id)
+            .set(dev, function(error) {
+              if (error) {
+                console.log("Devices could not be assigned to userdevices node", error);
+              } else {
+                console.log("Successfully assigned devices to userdevices node");
+              }
+            });
+          var u = {
+            firstname: selectedUser.firstname,
+            lastname: selectedUser.lastname,
+            email: selectedUser.email,
+            role: selectedUser.role,
+            department: selectedUser.department,
+            phoneNumber: selectedUser.phoneNumber
+          };
+          usersRef.child(userDevices[i].$id).child(selectedUser.$id)
+            .set(u, function(error) {
+              if (error) {
+                console.log("Devices could not be assigned to deviceusers node", error);
+              } else {
+                console.log("Successfully assigned devices to deviceusers node");
+              }
+            });
         }
+      }
     }
 
     //turn into Promise
     function unassignDevice(selectedUser, selectedDevice) {
-        userdevicesRef.child(selectedUser.$id).child(selectedDevice.id).remove().then(function() {
-          console.log("Successfully removed device from userdevices node");
-          usersRef.child(selectedDevice.id).child(selectedUser.$id).remove().then(function(){
-            console.log("Successfully removed device from deviceusers node");
-          });
+      userdevicesRef.child(selectedUser.$id).child(selectedDevice.id).remove().then(function() {
+        console.log("Successfully removed device from userdevices node");
+        usersRef.child(selectedDevice.id).child(selectedUser.$id).remove().then(function() {
+          console.log("Successfully removed device from deviceusers node");
         });
+      });
     };
 
     function deleteUserDevices(id) {
       var devicesToDelete = $firebaseArray(userdevicesRef.child(id));
 
       devicesToDelete.$loaded()
-        .then(function(){
+        .then(function() {
           angular.forEach(devicesToDelete, function(device) {
             console.log(device.$id);
-            usersRef.child(device.$id).child(id).remove().then(function(){
+            usersRef.child(device.$id).child(id).remove().then(function() {
               console.log("Removed " + device.$id);
             });
           });
         });
 
       userdevicesRef.child(id).remove()
-       .then(function(){
-         console.log("Removed from userdevices");
-       });
+        .then(function() {
+          console.log("Removed from userdevices");
+        });
     }
 
     function addDevice(newDeviceId) {
@@ -97,7 +108,7 @@ angular.module('sopApp')
         var uRef = firebase.database().ref('users/' + currentUser.uid);
         var user = $firebaseObject(uRef);
 
-        user.$loaded().then(function(){
+        user.$loaded().then(function() {
           usersRef.child(newDeviceId + '/' + currentUser.uid).set({
             'firstname': user.firstname,
             'lastname': user.lastname,
@@ -111,19 +122,19 @@ angular.module('sopApp')
         var newref = ref.push();
         newref.set(device);
       }
-  	}
+    }
 
     var Devices = {
-      getMainDevices: function(){
+      getMainDevices: function() {
         for (var i = 0; i < userDevices.length; i++) {
           userDevices[i].selected = false;
         }
         return userDevices;
       },
-      getUsersPerDevice: function(id){
+      getUsersPerDevice: function(id) {
         return $firebaseArray(usersRef.child(id));
       },
-      getDevicesPerUser: function(id){
+      getDevicesPerUser: function(id) {
         return $firebaseArray(userdevicesRef.child(id));
       },
       assignDevices: assignDevices,

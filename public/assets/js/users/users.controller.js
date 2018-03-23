@@ -20,7 +20,8 @@ angular.module('sopApp')
       password: '',
       role: '',
       department: '',
-      parentid: currentUser.uid
+      parentid: currentUser.uid,
+      phoneNumber: ''
     };
 
     userCtrl.createUser = function() {
@@ -35,7 +36,8 @@ angular.module('sopApp')
           password: '',
           role: '',
           department: '',
-          parentid: currentUser.uid
+          parentid: currentUser.uid,
+          phoneNumber: ''
         };
         $scope.close();
         $(document.body).css({
@@ -66,7 +68,7 @@ angular.module('sopApp')
     };
 
     userCtrl.assignDevices = function() {
-      Devices.assignDevices(userCtrl.selectedUser);
+      Devices.assignDevices(userCtrl.selectedUser, userCtrl.subusers, userCtrl.multiselect.selected);
       $scope.close();
     };
 
@@ -104,19 +106,19 @@ angular.module('sopApp')
       });
     };
 
-    userCtrl.showAddDevice = function(){
+    userCtrl.showAddDevice = function() {
       origDevices = angular.copy(userCtrl.myDevices);
     };
 
-    userCtrl.cancelAddDevice = function(){
+    userCtrl.cancelAddDevice = function() {
       userCtrl.myDevices = origDevices;
     };
 
-    userCtrl.showModifyUser = function(){
+    userCtrl.showModifyUser = function() {
       origSelectedUser = angular.copy(userCtrl.selectedUser);
     };
 
-    userCtrl.cancelModifyUser = function(){
+    userCtrl.cancelModifyUser = function() {
       Users.cancelEditSubUser(origSelectedUser);
       Users.setSelectedUser(origSelectedUser.$id);
       userCtrl.selectedUser = Users.getSelectedUser();

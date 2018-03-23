@@ -17,7 +17,7 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" >
-                    <li><a href="#" data-toggle="modal" data-target="#addDevice" style="color:black">Assign Devices</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#addDevice" style="color:black" ng-click="userCtrl.showAddDevice()">Assign Devices</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#deleteUser" style="color:black">Delete</a></li>
                     <li role="separator" class="divider"></li>
                     <li>
@@ -68,7 +68,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-12" ng-if="!multiselect.selected">
+      <div class="col-md-12" ng-if="!userCtrl.multiselect.selected">
         <div class="card card-plain">
           <div class="card-header" data-background-color="purple">
             <h4 class="title">Devices per user</h4>
@@ -289,7 +289,7 @@
     <div class="modal-content">
       <div class="card">
         <div class="card-header" data-background-color="purple">
-          <h4 class="title"><span> Assign devices to {{userCtrl.selectedUser.firstname}}</span></h4>
+          <h4 class="title">Assign devices<span ng-if="!userCtrl.multiselect.selected"> to {{userCtrl.selectedUser.firstname}}</span></h4>
           <!-- <p class="category">Changes can not be undone</p> -->
         </div>
         <div class="card-content">
