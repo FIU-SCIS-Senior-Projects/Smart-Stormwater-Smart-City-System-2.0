@@ -10,7 +10,6 @@
                 <p class="category">View and modify users' information</p>
               </div>
               <div class="col-md-6">
-
                 <div class="dropdown pull-right">
                   <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
                     <b>Actions</b>
@@ -18,14 +17,13 @@
                   </button>
                   <ul class="dropdown-menu" >
                     <li><a href="#" data-toggle="modal" data-target="#addDevice" style="color:black" ng-click="userCtrl.showAddDevice()">Assign Devices</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#deleteUser" style="color:black">Delete</a></li>
+                    <!-- <li><a href="#" data-toggle="modal" data-target="#deleteUser" style="color:black">Delete</a></li> -->
                     <li role="separator" class="divider"></li>
                     <li>
                       <label><input type="checkbox"  style="margin-left:15px" value="{{userCtrl.multiselect.selected}}" ng-model="userCtrl.multiselect.selected" ng-change="userCtrl.unselectSubusers()"><b>  Multiselect</b></label>
                     </li>
                   </ul>
                 </div>
-
               </div>
             </div>
             <a class="btn-floating pull-right">
@@ -40,7 +38,7 @@
                 <th>Name</th>
                 <th>Department</th>
                 <th>Role</th>
-                <th>Modify User</th>
+                <th ng-if="!userCtrl.multiselect.selected">Modify User</th>
               </thead>
               <tbody>
                 <tr ng-repeat="sub in userCtrl.subusers" ng-click="userCtrl.setSelected(sub.$id)" ng-class="{selected: sub.$id === userCtrl.idSelected && !userCtrl.multiselect.selected}">
@@ -51,7 +49,7 @@
                   <td>{{sub.role}}</td>
                   <!-- <td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modifyUser">Modify</button>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteUser">Delete</button></td> -->
-                  <td>
+                  <td ng-if="!userCtrl.multiselect.selected">
                     <div class="dropdown">
                       <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="fa fa-bars"></span>
@@ -244,7 +242,7 @@
     <div class="modal-content">
       <div class="card">
         <div class="card-header" data-background-color="purple">
-          <h4 class="title"><span> Are you sure you want to delete {{userCtrl.selectedUser.firstname}}'s profile?</span></h4>
+          <h4 class="title">Are you sure you want to delete<span ng-if="!userCtrl.multiselect.selected"> {{userCtrl.selectedUser.email}}'s profile?</span><span ng-if="userCtrl.multiselect.selected"> the selected profiles?</span></h4>
           <p class="category">Changes can not be undone</p>
         </div>
         <div class="card-content">

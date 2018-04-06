@@ -1,28 +1,28 @@
 <div class="content" style="margin-top: 100px">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-12">
         <div class="card">
           <div class="card-header" data-background-color="purple">
-            <h4 class="title"><span ng-if="user.firstname">{{user.firstname}}'s</span> Profile</h4>
+            <h4 class="title"><span ng-if="accountCtrl.user.firstname">{{accountCtrl.user.firstname}}'s</span> Profile</h4>
             <p class="category">Complete your profile</p>
           </div>
           <div class="card-content">
             <div ng-show="errorMessage">
               <span>{{errorMessage}}</span>
             </div>
-            <form ng-submit="updateProfile()">
+            <form name="profileForm" ng-submit="accountCtrl.updateProfile()">
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group label-floating">
                     <label class="control-label">First Name</label>
-                    <input type="text" class="form-control" ng-model="user.firstname" required>
+                    <input type="text" class="form-control" ng-model="accountCtrl.user.firstname" required>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group label-floating">
                     <label class="control-label">Last Name</label>
-                    <input type="text" class="form-control" ng-model="user.lastname" required>
+                    <input type="text" class="form-control" ng-model="accountCtrl.user.lastname" required>
                   </div>
                 </div>
               </div>
@@ -30,13 +30,13 @@
                 <div class="col-md-6">
                   <div class="form-group label-floating">
                     <label class="control-label">Email</label>
-                    <input type="email" class="form-control" ng-model="user.email" disabled>
+                    <input type="email" class="form-control" ng-model="accountCtrl.user.email" disabled>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group label-floating">
                     <label class="control-label">Role</label>
-                    <input type="text" class="form-control" ng-model="user.role" disabled>
+                    <input type="text" class="form-control" ng-model="accountCtrl.user.role" disabled>
                   </div>
                 </div>
               </div>
@@ -44,13 +44,13 @@
                 <div class="col-md-6">
                   <div class="form-group label-floating">
                     <label class="control-label">Department</label>
-                    <input type="text" class="form-control" ng-model="user.department" disabled>
+                    <input type="text" class="form-control" ng-model="accountCtrl.user.department" disabled>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group label-floating">
                     <label class="control-label">Phone Number</label>
-                    <input type="text" class="form-control" ng-model="user.phoneNumber">
+                    <input type="text" class="form-control" ng-model="accountCtrl.user.phoneNumber">
                   </div>
                 </div>
               </div>
@@ -65,6 +65,7 @@
   </div>
 </div>
 
+
 <div class="modal fade" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -75,15 +76,15 @@
         </div>
         <div class="card-content">
           <div ng-show="errorMessage">
-            <span>{{PasswordData.error}}</span>
+            <span>{{accountCtrl.PasswordData.error}}</span>
           </div>
-          <span>{{PasswordData.error}}</span>
-          <form ng-submit="changePassword()">
+          <span>{{accountCtrl.PasswordData.error}}</span>
+          <form ng-submit="accountCtrl.changePassword()">
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group label-floating">
                   <label class="control-label">Current Password</label>
-                  <input type="password" class="form-control" ng-model="PasswordData.oldpassword" required>
+                  <input type="password" class="form-control" ng-model="accountCtrl.PasswordData.oldpassword" required>
                 </div>
               </div>
             </div>
@@ -91,7 +92,7 @@
               <div class="col-md-6">
                 <div class="form-group label-floating">
                   <label class="control-label">Password</label>
-                  <input type="password" class="form-control" ng-model="PasswordData.password" ng-change="textChanged()" required>
+                  <input type="password" class="form-control" ng-model="accountCtrl.PasswordData.password" ng-change="accountCtrl.textChanged()" required>
                 </div>
               </div>
             </div>
@@ -99,12 +100,12 @@
               <div class="col-md-6">
                 <div class="form-group label-floating">
                   <label class="control-label">Confirm Password</label>
-                  <input type="password" class="form-control" id="password2" ng-model="PasswordData.password2" ng-change="textChanged()" required>
+                  <input type="password" class="form-control" id="password2" ng-model="accountCtrl.PasswordData.password2" ng-change="accountCtrl.textChanged()" required>
                 </div>
               </div>
             </div>
             <button type="submit" id="UpdatePassword" class="btn btn-primary pull-right">Update Password</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="accountCtrl.cancelChangePassword()">Cancel</button>
             <div class="clearfix"></div>
           </form>
         </div>

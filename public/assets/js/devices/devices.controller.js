@@ -17,7 +17,7 @@ angular.module('sopApp')
     deviceCtrl.newDeviceId;
 
     deviceCtrl.addDevice = function() {
-       if (deviceCtrl.disabled && !deviceCtrl.newDeviceId) {
+      if (deviceCtrl.disabled && !deviceCtrl.newDeviceId) {
         deviceCtrl.errorMessage = "Missing Device ID";
       } else {
 
@@ -30,8 +30,8 @@ angular.module('sopApp')
     };
 
     //Helper disable fields in form
-  	deviceCtrl.dis = function(){
-  		deviceCtrl.disabled = !deviceCtrl.disabled;
-  	}
+    deviceCtrl.dis = function() {
+      deviceCtrl.disabled = !deviceCtrl.disabled;
+    }
 
   }]);

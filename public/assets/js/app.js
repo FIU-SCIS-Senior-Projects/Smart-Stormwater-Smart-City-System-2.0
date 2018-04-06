@@ -9,7 +9,8 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
         templateUrl: 'views/dashboard.html'
       })
       .when('/account', {
-        templateUrl: 'views/account.html'
+        templateUrl: 'views/account.html',
+        controller: 'AccountCtrl as accountCtrl'
       })
       .when('/users', {
         templateUrl: 'views/users.html',
@@ -20,11 +21,16 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
         controller: 'DeviceCtrl as deviceCtrl'
       })
       .when('/notifications', {
-        templateUrl: 'views/notifications.html'
+        templateUrl: 'views/notifications.html',
+        controller: 'NotificationCtrl as notificationCtrl'
       })
       .when('/maps', {
         templateUrl: 'views/maps.html',
         controller: 'MapCtrl'
+      })
+      .when('/settings', {
+        templateUrl: 'views/settings.html',
+        controller: 'SettingsCtrl as settingsCtrl'
       })
       .otherwise({
         templateUrl: 'views/dashboard.html'
@@ -37,85 +43,85 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
   })
   .controller('MainCtrl', function($scope, $http, $firebaseArray, $firebaseObject) {
 
-    var currentUser = firebase.auth().currentUser;
-
-    $scope.user = {
-      uid: '',
-      firstname: '',
-      lastname: '',
-      role: '',
-      department: '',
-      phoneNumber: '',
-      parentid: ''
-    }
-
-    $scope.selectedUser = {
-      uid: '',
-      firstname: '',
-      lastname: '',
-      role: '',
-      department: '',
-      phoneNumber: '',
-      parentid: ''
-    }
-
-    var PasswordData = {
-      password: '',
-      password2: '',
-      oldpassword: '',
-      error: ''
-    };
-    $scope.PasswordData = PasswordData;
-
-    var usersRef = firebase.database().ref('users');
-    var user = $firebaseObject(usersRef.child(currentUser.uid));
-    $scope.user = user;
-
-    $scope.updateProfile = function() {
-      usersRef.child(currentUser.uid)
-        .update({
-          'firstname': $scope.user.firstname,
-          'lastname': $scope.user.lastname,
-          'phoneNumber': $scope.user.phoneNumber
-        });
-
-      var subusersRef = firebase.database().ref('subusers/' + user.parentid);
-      subusersRef.child(currentUser.uid)
-        .update({
-          'firstname': $scope.user.firstname,
-          'lastname': $scope.user.lastname,
-          'phoneNumber': $scope.user.phoneNumber
-        });
-
-      alert('Profile updated successfully');
-    };
-
-    $scope.changePassword = function() {
-      var credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, $scope.PasswordData.oldpassword);
-      currentUser.reauthenticateWithCredential(credential).then(function() {
-        currentUser.updatePassword($scope.PasswordData.password).then(function() {
-          var PasswordData = {
-            password: '',
-            password2: '',
-            oldpassword: '',
-            error: ''
-          };
-          $scope.close();
-        }).catch(function(error) {
-          alert('Error updating password');
-          console.log(error);
-          var PasswordData = {
-            password: '',
-            password2: '',
-            oldpassword: '',
-            error: ''
-          };
-        });
-      }).catch(function(error) {
-        alert(error);
-        console.log(error);
-      });
-    }
+    // var currentUser = firebase.auth().currentUser;
+    //
+    // $scope.user = {
+    //   uid: '',
+    //   firstname: '',
+    //   lastname: '',
+    //   role: '',
+    //   department: '',
+    //   phoneNumber: '',
+    //   parentid: ''
+    // }
+    //
+    // $scope.selectedUser = {
+    //   uid: '',
+    //   firstname: '',
+    //   lastname: '',
+    //   role: '',
+    //   department: '',
+    //   phoneNumber: '',
+    //   parentid: ''
+    // }
+    //
+    // var PasswordData = {
+    //   password: '',
+    //   password2: '',
+    //   oldpassword: '',
+    //   error: ''
+    // };
+    // $scope.PasswordData = PasswordData;
+    //
+    // var usersRef = firebase.database().ref('users');
+    // var user = $firebaseObject(usersRef.child(currentUser.uid));
+    // $scope.user = user;
+    //
+    // $scope.updateProfile = function() {
+    //   usersRef.child(currentUser.uid)
+    //     .update({
+    //       'firstname': $scope.user.firstname,
+    //       'lastname': $scope.user.lastname,
+    //       'phoneNumber': $scope.user.phoneNumber
+    //     });
+    //
+    //   var subusersRef = firebase.database().ref('subusers/' + user.parentid);
+    //   subusersRef.child(currentUser.uid)
+    //     .update({
+    //       'firstname': $scope.user.firstname,
+    //       'lastname': $scope.user.lastname,
+    //       'phoneNumber': $scope.user.phoneNumber
+    //     });
+    //
+    //   alert('Profile updated successfully');
+    // };
+    //
+    // $scope.changePassword = function() {
+    //   var credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, $scope.PasswordData.oldpassword);
+    //   currentUser.reauthenticateWithCredential(credential).then(function() {
+    //     currentUser.updatePassword($scope.PasswordData.password).then(function() {
+    //       var PasswordData = {
+    //         password: '',
+    //         password2: '',
+    //         oldpassword: '',
+    //         error: ''
+    //       };
+    //       $scope.close();
+    //     }).catch(function(error) {
+    //       alert('Error updating password');
+    //       console.log(error);
+    //       var PasswordData = {
+    //         password: '',
+    //         password2: '',
+    //         oldpassword: '',
+    //         error: ''
+    //       };
+    //     });
+    //   }).catch(function(error) {
+    //     alert(error);
+    //     console.log(error);
+    //   });
+    // }
 
     $scope.logout = function() {
       firebase.auth().signOut().then(function() {
@@ -125,28 +131,28 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       });
     }
 
-    $scope.textChanged = function() {
-      if ($scope.PasswordData.password2 == '') {
-        if (($scope.PasswordData.password.length > 0) && ($scope.PasswordData.password.length < 6)) {
-          $scope.PasswordData.error = 'The new password must be at least six characters long';
-          document.getElementById("password2").disabled = true;
-        } else {
-          $scope.PasswordData.error = '';
-          document.getElementById("password2").disabled = false;
-        }
-      } else {
-        if ($scope.PasswordData.password == $scope.PasswordData.password2) {
-          $scope.PasswordData.error = '';
-        } else {
-          $scope.PasswordData.error = 'Passwords must match';
-        }
-      }
-      if ($scope.PasswordData.error != '') {
-        document.getElementById("UpdatePassword").disabled = true;
-      } else {
-        document.getElementById("UpdatePassword").disabled = false;
-      }
-    };
+    // $scope.textChanged = function() {
+    //   if ($scope.PasswordData.password2 == '') {
+    //     if (($scope.PasswordData.password.length > 0) && ($scope.PasswordData.password.length < 6)) {
+    //       $scope.PasswordData.error = 'The new password must be at least six characters long';
+    //       document.getElementById("password2").disabled = true;
+    //     } else {
+    //       $scope.PasswordData.error = '';
+    //       document.getElementById("password2").disabled = false;
+    //     }
+    //   } else {
+    //     if ($scope.PasswordData.password == $scope.PasswordData.password2) {
+    //       $scope.PasswordData.error = '';
+    //     } else {
+    //       $scope.PasswordData.error = 'Passwords must match';
+    //     }
+    //   }
+    //   if ($scope.PasswordData.error != '') {
+    //     document.getElementById("UpdatePassword").disabled = true;
+    //   } else {
+    //     document.getElementById("UpdatePassword").disabled = false;
+    //   }
+    // };
 
     $scope.close = function() {
       $('#addUser').modal('hide');
@@ -157,6 +163,13 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       $('#removeDevice').modal('hide');
     }
 
+  }).filter('filter', function($filter) {
+
+    return function(input) {
+
+      var date = new Date(input);
+      return ($filter('date')(date, 'EEE MMM dd yyyy HH:mm:ss'));
+    }
   })
   .controller('MapCtrl', function($scope, $firebaseArray) {
     $scope.devicesRef = $firebaseArray(firebase.database().ref('devicetype/Stormwater'));

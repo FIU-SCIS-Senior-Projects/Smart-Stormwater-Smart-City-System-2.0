@@ -1,0 +1,35 @@
+<div class="content" style="margin-top: 100px">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header" data-background-color="purple">
+            <h4 class="title">Notifications Settings</h4>
+            <p class="category">Update your Notifications Settings</p>
+          </div>
+          <div class="card-content">
+            <form name="settingsForm" ng-submit="settingsCtrl.updateNotificationSettings()">
+              <div class="row">
+                <p>
+                  <input type="checkbox" value="{{settingsCtrl.user.settings.emailNotification}}" ng-model="settingsCtrl.user.settings.emailNotification"> Email Notifications
+                </p>
+              </div>
+              <div class="row">
+                <p>
+                  <input type="checkbox" value="{{settingsCtrl.user.settings.smsNotification}}" ng-model="settingsCtrl.user.settings.smsNotification"> SMS Notifications
+                </p>
+              </div>
+              <div class="row">
+                <p>
+                  <input type="number" value="{{settingsCtrl.user.settings.fillLevel}}" min="60" max="100" step="5" ng-model="settingsCtrl.user.settings.fillLevel"> Fill Level
+                </p>
+              </div>
+              <button type="submit" class="btn btn-primary pull-right">Update Settings</button>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
