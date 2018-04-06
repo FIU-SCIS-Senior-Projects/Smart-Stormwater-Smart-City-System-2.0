@@ -190,7 +190,7 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
 
 exports.deleteUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
-    admin.auth().deleteUser(uid)
+    admin.auth().deleteUser(req.body.uid)
       .then(function() {
         console.log("Successfully deleted user");
       })
