@@ -10,13 +10,14 @@ angular.module('sopApp')
     userCtrl.myDevices = Devices.getMainDevices();
     var origDevices = null;
     var origSelectedUser = null;
-    
+
     userCtrl.newUser = {
       email: '',
       password: '',
       role: '',
       department: '',
-      parentid: currentUser.uid
+      parentid: currentUser.uid,
+      phoneNumber: ''
     };
 
     userCtrl.createUser = function() {
@@ -62,7 +63,7 @@ angular.module('sopApp')
     };
 
     userCtrl.assignDevices = function() {
-      Devices.assignDevices(userCtrl.selectedUser);
+      Devices.assignDevices(userCtrl.selectedUser, userCtrl.subusers, userCtrl.multiselect.selected);
       $scope.close();
     };
 

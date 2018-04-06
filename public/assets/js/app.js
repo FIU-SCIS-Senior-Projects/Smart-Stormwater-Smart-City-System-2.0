@@ -43,18 +43,18 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
   })
   .controller('MainCtrl', function($scope, $http, $firebaseArray, $firebaseObject) {
 
-    // var currentUser = firebase.auth().currentUser;
-    //
-    // $scope.user = {
-    //   uid: '',
-    //   firstname: '',
-    //   lastname: '',
-    //   role: '',
-    //   department: '',
-    //   phoneNumber: '',
-    //   parentid: ''
-    // }
-    //
+    var currentUser = firebase.auth().currentUser;
+
+    $scope.user = {
+      uid: '',
+      firstname: '',
+      lastname: '',
+      role: '',
+      department: '',
+      phoneNumber: '',
+      parentid: ''
+    }
+
     // $scope.selectedUser = {
     //   uid: '',
     //   firstname: '',
@@ -73,9 +73,9 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     // };
     // $scope.PasswordData = PasswordData;
     //
-    // var usersRef = firebase.database().ref('users');
-    // var user = $firebaseObject(usersRef.child(currentUser.uid));
-    // $scope.user = user;
+    var usersRef = firebase.database().ref('users');
+    var user = $firebaseObject(usersRef.child(currentUser.uid));
+    $scope.user = user;
     //
     // $scope.updateProfile = function() {
     //   usersRef.child(currentUser.uid)
