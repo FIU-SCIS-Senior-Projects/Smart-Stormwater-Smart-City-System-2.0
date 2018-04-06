@@ -6,10 +6,16 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
   .config(function($routeProvider, $locationProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/dashboard.html'
+        templateUrl: 'views/dashboard.html',
+        controller: 'DashboardCtrl as dashboardCtrl'
       })
       .when('/account', {
-        templateUrl: 'views/account.html'
+        templateUrl: 'views/account.html',
+        controller: 'AccountCtrl as accountCtrl'
+      })
+      .when('/settings', {
+        templateUrl: 'views/settings.html',
+        controller: 'SettingsCtrl as settingsCtrl'
       })
       .when('/users', {
         templateUrl: 'views/users.html',
@@ -20,14 +26,16 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
         controller: 'DeviceCtrl as deviceCtrl'
       })
       .when('/notifications', {
-        templateUrl: 'views/notifications.html'
+        templateUrl: 'views/notifications.html',
+        controller: 'NotificationCtrl as notificationCtrl'
       })
       .when('/maps', {
         templateUrl: 'views/maps.html',
         controller: 'MapCtrl'
       })
       .otherwise({
-        templateUrl: 'views/dashboard.html'
+        templateUrl: 'views/dashboard.html',
+        controller: 'DashboardCtrl as dashboardCtrl'
       });
 
     $locationProvider.html5Mode({
@@ -156,20 +164,30 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       $('#addDevice').modal('hide');
       $('#removeDevice').modal('hide');
     }
+  }).filter('filter', function($filter) {
+
+    return function(input) {
+
+      var date = new Date(input);
+      return ($filter('date')(date, 'EEE MMM dd yyyy HH:mm:ss'));
+    }
   })
   .controller('MapCtrl', function($scope, $firebaseArray, $q) {
-    $scope.devicesRef = $firebaseArray(firebase.database().ref('userdevices/'+$scope.user.$id));
-  	$scope.position = {lat:'', lng:''};
-  	$scope.infowindow;
-  	$scope.markers = [];
-  	$scope.map;
+    $scope.devicesRef = $firebaseArray(firebase.database().ref('userdevices/' + $scope.user.$id));
+    $scope.position = {
+      lat: '',
+      lng: ''
+    };
+    $scope.infowindow;
+    $scope.markers = [];
+    $scope.map;
 
-  	$scope.devicesRef.$loaded().then(function() {
-  		$scope.initMap();
-    	 	angular.forEach($scope.devicesRef, function(value, key){
-  			  sensorMarker(value);
-    	 	})
-    	})
+    $scope.devicesRef.$loaded().then(function() {
+      $scope.initMap();
+      angular.forEach($scope.devicesRef, function(value, key) {
+        sensorMarker(value);
+      })
+    })
 
     // 	firebase.database().ref('devicetype/Stormwater').on('child_changed', function(snapshot) {
     // 		// console.log($scope.markers.length)
@@ -178,55 +196,65 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     // 				info($scope.markers[i], snapshot.val());
     // 			}
     // 		}
-  	// });
+    // });
 
-    	function sensorMarker(value) {
-    		// $scope.position.lat = value.position[0];
-  		  // $scope.position.lng = value.position[1];
-  		  var geocoder = new google.maps.Geocoder;
-    	   	var marker = new google.maps.Marker({
-  	       	position: new google.maps.LatLng(value.position[0], value.position[1]),
-  	       	map: $scope.map,
-  	       	// animation: google.maps.Animation.DROP,
-  	       	title: value.$id
-           });
-          //  console.log(marker)
-  	 	  info(marker, value);
-  	 	  $scope.markers.push(marker);
-    	}
+    function sensorMarker(value) {
+      // $scope.position.lat = value.position[0];
+      // $scope.position.lng = value.position[1];
+      var geocoder = new google.maps.Geocoder;
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(value.position[0], value.position[1]),
+        map: $scope.map,
+        // animation: google.maps.Animation.DROP,
+        title: value.$id
+      });
+      //  console.log(marker)
+      info(marker, value);
+      $scope.markers.push(marker);
+    }
 
-    	function info(marker, value) {
-    		// $scope.position.lat = value.position[0];
-        // $scope.position.lng = value.position[1];
-    		var geocoder = new google.maps.Geocoder;
-    		geocoder.geocode({'location': {lat:value.position[0], lng:value.position[1]}}, (results, status) => {
-          if (results != null && results.length > 0) {
-            var info = `<strong>Address</strong>: ${results[0].formatted_address}
+    function info(marker, value) {
+      // $scope.position.lat = value.position[0];
+      // $scope.position.lng = value.position[1];
+      var geocoder = new google.maps.Geocoder;
+      geocoder.geocode({
+        'location': {
+          lat: value.position[0],
+          lng: value.position[1]
+        }
+      }, (results, status) => {
+        if (results != null && results.length > 0) {
+          var info = `<strong>Address</strong>: ${results[0].formatted_address}
   	   		  <br> <strong>Filled</strong>: ${value.filled}%
   	   		  <br> <strong>Battery</strong>: ${value.battery}%`;
-  	   	    var infowindow = new google.maps.InfoWindow({});
-      	    marker.set('content', info);
-      	    marker.addListener('click', function() {
-      	    	infowindow.setContent(this.get('content'));
-            	infowindow.open($scope.map, marker);
-      	    });
-          }
-      	});
-    	}
+          var infowindow = new google.maps.InfoWindow({});
+          marker.set('content', info);
+          marker.addListener('click', function() {
+            infowindow.setContent(this.get('content'));
+            infowindow.open($scope.map, marker);
+          });
+        }
+      });
+    }
 
-  	$scope.initMap = function() {
-  	  	$scope.map = new google.maps.Map(document.getElementById('map'), {
-  	  	  	center: new google.maps.LatLng(25.7498, -80.2157),
-  	  	  	zoom: 12,
-  	  	  	styles: [{
-  	  	  		featureType: 'poi',
-  	  	    	stylers: [{ visibility: 'off' }]  // Turn off points of interest.
-  	  	  	},
-  	  	  	{
-  	  	    	featureType: 'transit.station',
-  	  	    	stylers: [{ visibility: 'off' }]  // Turn off bus stations, train stations, etc.
-  	  	  	}],
-  	  	  	disableDoubleClickZoom: true
-  	  	});
-  	}
+    $scope.initMap = function() {
+      $scope.map = new google.maps.Map(document.getElementById('map'), {
+        center: new google.maps.LatLng(25.7498, -80.2157),
+        zoom: 12,
+        styles: [{
+            featureType: 'poi',
+            stylers: [{
+              visibility: 'off'
+            }] // Turn off points of interest.
+          },
+          {
+            featureType: 'transit.station',
+            stylers: [{
+              visibility: 'off'
+            }] // Turn off bus stations, train stations, etc.
+          }
+        ],
+        disableDoubleClickZoom: true
+      });
+    }
   })

@@ -48,7 +48,6 @@
               </thead>
               <tbody>
                 <tr ng-repeat="not in notificationCtrl.notifications | orderBy:notificationCtrl.sortOrder | deviceFilter:notificationCtrl.devices">
-                  <!-- orderBy:notificationCtrl.sortOrder -->
                   <td>{{not.device}}</td>
                   <td>{{not.date | filter}}</td>
                   <td>{{not.fillLevel}}</td>

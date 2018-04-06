@@ -31,7 +31,9 @@ angular.module('sopApp')
           var dev = {};
           dev = {
             name: userDevices[i].$id,
-            location: userDevices[i].position
+            position: userDevices[i].position,
+            battery: userDevices[i].battery,
+            lastseen: userDevices[i].lastseen
           };
           userdevicesRef.child(selectedUser.$id).child(userDevices[i].$id)
             .set(dev, function(error) {

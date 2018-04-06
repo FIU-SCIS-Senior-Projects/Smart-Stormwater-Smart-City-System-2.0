@@ -33,9 +33,10 @@ function sendEmailAlert(email, displayName) {
 
 exports.createUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
+    console.log('TESTINGG');
     admin.auth().createUser({
         email: req.body.email,
-        password: req.body.password
+        password: '123456'
       })
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
