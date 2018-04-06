@@ -1,27 +1,22 @@
 angular.module('sopApp')
   .controller('UserCtrl', function(Users, Devices, $scope) {
     var userCtrl = this;
-
     var currentUser = firebase.auth().currentUser;
-
     var multiselect = {
       selected: false
     };
     userCtrl.multiselect = multiselect;
-
     userCtrl.subusers = Users.getSubUsers();
     userCtrl.myDevices = Devices.getMainDevices();
-
     var origDevices = null;
     var origSelectedUser = null;
-
+    
     userCtrl.newUser = {
       email: '',
       password: '',
       role: '',
       department: '',
-      parentid: currentUser.uid,
-      phoneNumber: ''
+      parentid: currentUser.uid
     };
 
     userCtrl.createUser = function() {
@@ -36,8 +31,7 @@ angular.module('sopApp')
           password: '',
           role: '',
           department: '',
-          parentid: currentUser.uid,
-          phoneNumber: ''
+          parentid: currentUser.uid
         };
         $scope.close();
         $(document.body).css({
@@ -68,7 +62,7 @@ angular.module('sopApp')
     };
 
     userCtrl.assignDevices = function() {
-      Devices.assignDevices(userCtrl.selectedUser, userCtrl.subusers, userCtrl.multiselect.selected);
+      Devices.assignDevices(userCtrl.selectedUser);
       $scope.close();
     };
 
@@ -106,19 +100,19 @@ angular.module('sopApp')
       });
     };
 
-    userCtrl.showAddDevice = function() {
+    userCtrl.showAddDevice = function(){
       origDevices = angular.copy(userCtrl.myDevices);
     };
 
-    userCtrl.cancelAddDevice = function() {
+    userCtrl.cancelAddDevice = function(){
       userCtrl.myDevices = origDevices;
     };
 
-    userCtrl.showModifyUser = function() {
+    userCtrl.showModifyUser = function(){
       origSelectedUser = angular.copy(userCtrl.selectedUser);
     };
 
-    userCtrl.cancelModifyUser = function() {
+    userCtrl.cancelModifyUser = function(){
       Users.cancelEditSubUser(origSelectedUser);
       Users.setSelectedUser(origSelectedUser.$id);
       userCtrl.selectedUser = Users.getSelectedUser();
