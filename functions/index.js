@@ -1,16 +1,41 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const GeoFire = require('geofire');
-var cors = require('cors')({
-  origin: true
-});
+var cors = require('cors')({origin: true});
 admin.initializeApp(functions.config().firebase);
+const nodemailer = require('nodemailer');
+const gmailEmail = functions.config().gmail.email;
+const gmailPassword = functions.config().gmail.password;
+const mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {user: gmailEmail, pass: gmailPassword},
+});
+const APP_NAME = 'SOP Systems';
+
+exports.sendEmailAlert = functions.database.ref('/userdevices').onUpdate((event) => {
+  // const user = event.data; // The Firebase user.
+  const email = "migherr@hotmail.com"; // The email of the user.
+  const displayName = "Miguel"; // The display name of the user.
+  console.log(event);
+  // return sendEmailAlert(email, displayName);
+});
+
+function sendEmailAlert(email, displayName) {
+  const mailOptions = {
+    from: `${APP_NAME} <noreply@broadcastapp-1119.firebaseapp.com>`,
+    to: email,
+  };
+  mailOptions.subject = `Alert from your ${APP_NAME} device!`;
+  mailOptions.text = `Hey ${displayName || ''}! Welcome to ${APP_NAME}. Your device alert!.`;
+  return mailTransport.sendMail(mailOptions).then(() => {
+    return console.log('New alert email sent to:', email);
+  });
+}
 
 exports.createUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     admin.auth().createUser({
         email: req.body.email,
-        password: req.body.password
+        password: 'req.body.password'
       })
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
@@ -29,7 +54,12 @@ exports.createUser = functions.https.onRequest((req, res) => {
           role: req.body.role,
           department: req.body.department,
           parentid: req.body.parentid,
-          phoneNumber: ''
+          phoneNumber:'',
+          settings: {
+            emailNotification: false,
+            smsNotification: false,
+            fillLevel: 60
+          }
         };
         userRef.child(userRecord.uid)
           .set(user, function(error) {
@@ -41,7 +71,7 @@ exports.createUser = functions.https.onRequest((req, res) => {
           });
 
         var subuserRef = db.ref("subusers");
-        subuserRef.child(req.body.parentid + "/" + userRecord.uid).set(user, function(error) {
+        subuserRef.child(req.body.parentid + "/" + userRecord.uid).set(user, function(error){
           if (error) {
             console.log("New user could not be saved to subusers ", error);
           } else {
@@ -160,79 +190,50 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
 
 exports.deleteUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
-    admin.auth().deleteUser(req.body.uid)
+    admin.auth().deleteUser(uid)
       .then(function() {
         console.log("Successfully deleted user");
-        res.json({
-          status: "ok"
-        });
       })
       .catch(function(error) {
         console.log("Error deleting user:", error);
       });
-
-    // var db = admin.database();
-    //
-    // var listToDelete = req.body.listToDelete;
-    // var parentId = req.body.parentId;
-    //
-    // var usersRef = db.ref("users");
-    // var subuserRef = db.ref("subusers/" + parentId);
-    //
-    // var usersRemaining = listToDelete.length;
-    //
-    // for (var i = 0; i < listToDelete.length; i++) {
-    //   var id = listToDelete[i].$id;
-    //   admin.auth().deleteUser(id)
-    //     .then(function() {
-    //       console.log("Successfully deleted user");
-    //       usersRef.child(id).remove().then(function() {
-    //         console.log("Successfully deleted user from Users node");
-    //         subuserRef.child(id).remove().then(function() {
-    //           console.log("Successfully deleted user from Subusers node");
-    //
-    //           usersRemaining -= 1;
-    //           if (usersRemaining <= 0) {
-    //             res.json({
-    //               status: "ok"
-    //             });
-    //           }
-    //         });
-    //       });
-    //     })
-    //     .catch(function(error) {
-    //       console.log("Error deleting user:", error);
-    //     });
-    // }
   });
 });
+
+exports.addIotcore = 
 
 exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event => {
+    const attributes = event.data.attributes;
+    const deviceId = attributes['deviceId'];
+    const pubSubMessage = event.data;
+    // Decode the PubSub Message body.
+    const messageBody = pubSubMessage.data ? Buffer.from(pubSubMessage.data,'base64').toString() : null;
+    // console.log(JSON.parse(messageBody));
+    const data = JSON.parse(messageBody);
+    // var location = [parseFloat(data[1]), parseFloat(data[2])];
 
-  const attributes = event.data.attributes;
-  const deviceId = attributes['deviceId'];
-
-  const pubSubMessage = event.data;
-  // Decode the PubSub Message body.
-  const messageBody = pubSubMessage.data ? Buffer.from(pubSubMessage.data, 'base64').toString() : null;
-  const location = messageBody.split(',');
-  location[0] = parseFloat(location[0]);
-  location[1] = parseFloat(location[1]);
-  console.log(location);
-
-  return Promise.all([
-    updateCurrentDataFirebase(deviceId, location)
-  ]);
-});
-
-/**
- * Maintain last status in firebase
- */
-function updateCurrentDataFirebase(deviceId, location) {
-  const geoFire = new GeoFire(admin.database().ref('devices'));
-  return geoFire.set(deviceId, location).then(function() {
-    console.log("Provided key has been added to GeoFire");
-  }, function(error) {
-    console.log("Error: " + error);
+    return Promise.all([
+      updateCurrentDataFirebase(deviceId, data)
+    ]);
   });
+
+/** 
+ * Maintain last status in firebase
+*/
+function updateCurrentDataFirebase(deviceId, data) {
+  var updateData = {};
+  updateData[`deviceusers/${deviceId}`] = data;
+  updateData[`userdevices/userid`] = data;
+  admin.database().ref('deviceusers').child(deviceId).update({'lastseen': admin.database.ServerValue.TIMESTAMP});
+  return admin.database().ref().update(updateData);
+
+  // return admin.database().ref('deviceusers').child(deviceId).update(data).then(function() {
+  //    return admin.database().ref('userdevices/userid').child(deviceId).update(data).then(function() {
+  // }, function(error) {
+  //    console.log("Error: " + error);
+  // });
 }
+// go deviceusers/deviceid=>forEach (userid) {
+//  userdevices/userid/deviceid=>update(data)
+// }
+ 

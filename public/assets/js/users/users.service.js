@@ -2,15 +2,12 @@ angular.module('sopApp')
   .factory('Users', function($firebaseArray, $firebaseObject, $http, Devices) {
 
     var currentUser = firebase.auth().currentUser;
-
     var usersRef = firebase.database().ref('users');
     var subuserRef = firebase.database().ref('subusers/' + currentUser.uid);
     var subusers = $firebaseArray(subuserRef);
-
     var selectedUser = null;
-
+    // $q.when(db.put(doc)).then(/* ... */); make non promise to promise
     function createUser(newUser) {
-
       return new Promise((resolve, reject) => {
         $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/createUser", newUser)
           .then(function success(response) {
@@ -31,7 +28,6 @@ angular.module('sopApp')
     };
 
     function updateSubuser(id) {
-
       return new Promise((resolve, reject) => {
         subusers.$save(selectedUser)
           .then(function success(response) {
@@ -58,10 +54,9 @@ angular.module('sopApp')
     };
 
     function deleteSubuser(id) {
-
       return new Promise((resolve, reject) => {
         var sub = {
-          uid: id
+          'uid': id
         };
         $http.post("https://us-central1-broadcastapp-1119.cloudfunctions.net/deleteUser", sub)
           .then(function success(response) {

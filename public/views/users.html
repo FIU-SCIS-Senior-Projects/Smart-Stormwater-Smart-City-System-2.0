@@ -16,9 +16,10 @@
                     <b>Actions</b>
                     <span class="caret"></span>
                   </button>
-                  <ul class="dropdown-menu" >
-                    <li><a href="#" data-toggle="modal" data-target="#addDevice" style="color:black" ng-click="userCtrl.showAddDevice()">Assign Devices</a></li>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="modal" data-target="#addDevice" style="color:black">Assign Devices</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#deleteUser" style="color:black">Delete</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#userSettings" style="color:black">Settings</a></li>
                     <li role="separator" class="divider"></li>
                     <li>
                       <label><input type="checkbox"  style="margin-left:15px" value="{{userCtrl.multiselect.selected}}" ng-model="userCtrl.multiselect.selected" ng-change="userCtrl.unselectSubusers()"><b>  Multiselect</b></label>
@@ -58,7 +59,7 @@
                       </button>
                       <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                         <li><a href="#" data-toggle="modal" data-target="#modifyUser" ng-click="userCtrl.showModifyUser()">Modify</a></li>
-                        <li><a href="#" data-toggle="modal" data-target="#deleteUser">Delete</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#deleteUser">Delete User</a></li>
                       </ul>
                     </div>
                   </td>
@@ -68,14 +69,15 @@
           </div>
         </div>
       </div>
-      <div class="col-md-12" ng-if="!userCtrl.multiselect.selected">
+      <div class="col-md-12" ng-if="!multiselect.selected">
         <div class="card card-plain">
           <div class="card-header" data-background-color="purple">
             <h4 class="title">Devices per user</h4>
             <p class="category">Assign or unassign devices to the selected user</p>
-            <div ng-if="userCtrl.idSelected"><a class="btn-floating pull-right">
-                            <button type="button" class="btn btn-primary btn-floating" data-toggle="modal" data-target="#addDevice" ng-click="userCtrl.showAddDevice()"><i class="material-icons">add</i></button>
-                        </a>
+            <div ng-if="userCtrl.idSelected">
+              <a class="btn-floating pull-right">
+                <button type="button" class="btn btn-primary btn-floating" data-toggle="modal" data-target="#addDevice" ng-click="userCtrl.showAddDevice()"><i class="material-icons">add</i></button>
+              </a>
             </div>
           </div>
           <div class="card-content table-responsive">
@@ -98,10 +100,11 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal addUser-->
 <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <div class="col-md-10">
       <div class="card">
         <div class="card-header" data-background-color="purple">
           <h4 class="title">Create User</h4>
@@ -113,21 +116,15 @@
           </div>
           <form ng-submit="userCtrl.createUser()">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-10">
                 <div class="form-group label-floating">
                   <label class="control-label">Email</label>
                   <input type="email" class="form-control" ng-model="userCtrl.newUser.email" required>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group label-floating">
-                  <label class="control-label">Password</label>
-                  <input type="password" class="form-control" ng-model="userCtrl.newUser.password" required>
-                </div>
-              </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-10">
                 <div class="form-group label-floating">
                   <label class="control-label">Role</label>
                   <select class="form-control" ng-model="userCtrl.newUser.role">
@@ -139,7 +136,9 @@
                   </select>
                 </div>
               </div>
-              <div class="col-md-6">
+            </div>
+            <div class="row">
+              <div class="col-md-10">
                 <div class="form-group label-floating">
                   <label class="control-label">Department</label>
                   <select class="form-control" ng-model="userCtrl.newUser.department">
@@ -159,9 +158,10 @@
         </div>
       </div>
     </div>
+    </div> <!--end modal-content-->
   </div>
 </div>
-
+<!-- Modal modifyUser -->
 <div class="modal fade" id="modifyUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -238,7 +238,7 @@
     </div>
   </div>
 </div>
-
+<!-- Modal deleteUser -->
 <div class="modal fade" id="deleteUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -261,7 +261,7 @@
     </div>
   </div>
 </div>
-
+<!-- Modal removeDevice -->
 <div class="modal fade" id="removeDevice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -283,32 +283,26 @@
     </div>
   </div>
 </div>
-
+<!-- Modal addDevice -->
 <div class="modal fade" id="addDevice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="card">
         <div class="card-header" data-background-color="purple">
-          <h4 class="title">Assign devices<span ng-if="!userCtrl.multiselect.selected"> to {{userCtrl.selectedUser.firstname}}</span></h4>
+          <h4 class="title"><span> Assign devices to {{userCtrl.selectedUser.email}}</span></h4>
           <!-- <p class="category">Changes can not be undone</p> -->
         </div>
         <div class="card-content">
           <form ng-submit="userCtrl.assignDevices()">
             <div class="row">
               <div class="col-md-1">
-
               </div>
               <div class="col-md-6">
                 <div class="row" ng-repeat="dev in userCtrl.myDevices">
-
                   <label>
-                    <input
-                      type="checkbox"
-                      value="{{dev.$id}}"
-                      ng-model="dev.selected"
-                    > {{dev.$id}}
+                    <input type="checkbox" value="{{dev.$id}}" ng-model="dev.selected"> 
+                    {{dev.$id}}
                   </label>
-
                 </div>
               </div>
             </div>
@@ -321,3 +315,45 @@
     </div>
   </div>
 </div>
+<!-- Modal userSettings -->
+<div class="modal fade" id="userSettings" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="card">
+          <div class="card-header" data-background-color="purple">
+            <h4 class="title"><span> Change settings for {{userCtrl.selectedUser.email}}</span></h4>
+          </div>
+          <div class="card-content">
+            <form ng-submit="" ng-if="userCtrl.selectedUser.email">
+              <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-4">
+                  <div class="row">
+                    <label><input type="checkbox" value=""> Alerts by Email</label>
+                  </div>
+                  <div class="row">
+                    <label><input type="checkbox" value=""> Alerts by Text</label>
+                  </div>
+                  <div class="row">
+                    <label>Alert level at <input type="number" value="" style="width: 3em"> % filled</label>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary pull-right">Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="userCtrl.cancelAddDevice()">Cancel</button>
+              <div class="clearfix"></div>
+            </form>
+            <form action="" ng-if="!userCtrl.selectedUser.email">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <div class="row">
+                        <p>You did not select any user</p>
+                        </div>
+                    </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

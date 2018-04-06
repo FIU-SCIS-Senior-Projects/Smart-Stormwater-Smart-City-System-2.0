@@ -156,10 +156,9 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       $('#addDevice').modal('hide');
       $('#removeDevice').modal('hide');
     }
-
   })
-  .controller('MapCtrl', function($scope, $firebaseArray) {
-    $scope.devicesRef = $firebaseArray(firebase.database().ref('devicetype/Stormwater'));
+  .controller('MapCtrl', function($scope, $firebaseArray, $q) {
+    $scope.devicesRef = $firebaseArray(firebase.database().ref('userdevices/'+$scope.user.$id));
   	$scope.position = {lat:'', lng:''};
   	$scope.infowindow;
   	$scope.markers = [];
@@ -183,35 +182,37 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
 
     	function sensorMarker(value) {
     		$scope.position.lat = value.position[0];
-  		$scope.position.lng = value.position[1];
-  		var geocoder = new google.maps.Geocoder;
-    	 	var marker = new google.maps.Marker({
-  	     	position: new google.maps.LatLng($scope.position.lat, $scope.position.lng),
-  	     	map: $scope.map,
-  	     	// animation: google.maps.Animation.DROP,
-  	     	title: value.$id
-  	   	});
-  	 	info(marker, value);
-  	 	$scope.markers.push(marker);
+  		  $scope.position.lng = value.position[1];
+  		  var geocoder = new google.maps.Geocoder;
+    	   	var marker = new google.maps.Marker({
+  	       	position: new google.maps.LatLng($scope.position.lat, $scope.position.lng),
+  	       	map: $scope.map,
+  	       	// animation: google.maps.Animation.DROP,
+  	       	title: value.$id
+           });
+           console.log(marker)
+  	 	  info(marker, value);
+  	 	  $scope.markers.push(marker);
     	}
 
     	function info(marker, value) {
     		$scope.position.lat = value.position[0];
-  		$scope.position.lng = value.position[1];
+        $scope.position.lng = value.position[1];
     		var geocoder = new google.maps.Geocoder;
     		geocoder.geocode({'location': {lat:$scope.position.lat, lng:$scope.position.lng}}, (results, status) => {
-  	   		var info = `<strong>Address</strong>: ${results[0].formatted_address}
-  	   		 <br> <strong>Filled</strong>: ${value.filled}%
-  	   		 <br> <strong>Battery</strong>: ${value.battery}%`;
-  	   		var infowindow = new google.maps.InfoWindow({});
-      		marker.set('content', info);
-      		marker.addListener('click', function() {
-      			infowindow.setContent(this.get('content'));
-         			infowindow.open($scope.map, marker);
-      		});
+          if (results != null) {
+            var info = `<strong>Address</strong>: ${results[0].formatted_address}
+  	   		  <br> <strong>Filled</strong>: ${value.filled}%
+  	   		  <br> <strong>Battery</strong>: ${value.battery}%`;
+  	   	    var infowindow = new google.maps.InfoWindow({});
+      	    marker.set('content', info);
+      	    marker.addListener('click', function() {
+      	    	infowindow.setContent(this.get('content'));
+            	infowindow.open($scope.map, marker);
+      	    });
+          }
       	});
     	}
-
 
   	$scope.initMap = function() {
   	  	$scope.map = new google.maps.Map(document.getElementById('map'), {
