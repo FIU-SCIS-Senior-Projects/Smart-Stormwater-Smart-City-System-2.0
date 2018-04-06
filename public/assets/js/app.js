@@ -215,6 +215,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
     		var geocoder = new google.maps.Geocoder;
     		geocoder.geocode({'location': {lat:$scope.position.lat, lng:$scope.position.lng}}, (results, status) => {
           if (results != null) {
+            //console.log(results.length);
             var info = `<strong>Address</strong>: ${results[0].formatted_address}
   	   		  <br> <strong>Filled</strong>: ${value.filled}%
   	   		  <br> <strong>Battery</strong>: ${value.battery}%`;

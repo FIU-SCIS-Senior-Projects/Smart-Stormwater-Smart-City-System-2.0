@@ -32,7 +32,8 @@ angular.module('sopApp')
           password: '',
           role: '',
           department: '',
-          parentid: currentUser.uid
+          parentid: currentUser.uid,
+          phoneNumber: ''
         };
         $scope.close();
         $(document.body).css({

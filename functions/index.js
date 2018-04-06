@@ -35,7 +35,7 @@ exports.createUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     admin.auth().createUser({
         email: req.body.email,
-        password: 'req.body.password'
+        password: req.body.password
       })
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
@@ -101,7 +101,7 @@ exports.createUser = functions.https.onRequest((req, res) => {
 
 exports.getUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
-    admin.auth().getUser(uid)
+    admin.auth().getUser(req.body.uid)
       .then(function(userRecord) {
         // See the UserRecord reference doc for the contents of userRecord.
         console.log("Successfully fetched user data:", userRecord.toJSON());
@@ -193,6 +193,9 @@ exports.deleteUser = functions.https.onRequest((req, res) => {
     admin.auth().deleteUser(req.body.uid)
       .then(function() {
         console.log("Successfully deleted user");
+        res.json({
+           status: "ok"
+         });
       })
       .catch(function(error) {
         console.log("Error deleting user:", error);
@@ -200,7 +203,7 @@ exports.deleteUser = functions.https.onRequest((req, res) => {
   });
 });
 
-exports.addIotcore = 
+exports.addIotcore =
 
 exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event => {
     const attributes = event.data.attributes;
@@ -217,7 +220,7 @@ exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event =>
     ]);
   });
 
-/** 
+/**
  * Maintain last status in firebase
 */
 function updateCurrentDataFirebase(deviceId, data) {
@@ -236,4 +239,3 @@ function updateCurrentDataFirebase(deviceId, data) {
 // go deviceusers/deviceid=>forEach (userid) {
 //  userdevices/userid/deviceid=>update(data)
 // }
- 
