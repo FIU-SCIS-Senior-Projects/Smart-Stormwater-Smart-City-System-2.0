@@ -48,8 +48,7 @@ angular.module('sopApp')
             lastname: selectedUser.lastname,
             email: selectedUser.email,
             role: selectedUser.role,
-            department: selectedUser.department,
-            phoneNumber: selectedUser.phoneNumber
+            department: selectedUser.department
           };
           usersRef.child(userDevices[i].$id).child(selectedUser.$id)
             .set(u, function(error) {
