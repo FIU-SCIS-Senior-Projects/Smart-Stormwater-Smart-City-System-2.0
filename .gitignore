@@ -4,3 +4,4 @@ node_modules/
 firebase.json
 public/404.html
 firebase-debug.log
+.idea
