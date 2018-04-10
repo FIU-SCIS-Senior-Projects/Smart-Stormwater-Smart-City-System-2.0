@@ -13,8 +13,8 @@ const APP_NAME = 'SOP Systems';
 
 exports.sendEmailAlert = functions.database.ref('/userdevices').onUpdate((event) => {
   // const user = event.data; // The Firebase user.
-  const email = "migherr@hotmail.com"; // The email of the user.
-  const displayName = "Miguel"; // The display name of the user.
+  const email = event.data.email; // The email of the user.
+  const displayName = event.data.name; // The display name of the user.
   console.log(event);
   // return sendEmailAlert(email, displayName);
 });
@@ -204,8 +204,6 @@ exports.deleteUser = functions.https.onRequest((req, res) => {
   });
 });
 
-exports.addIotcore =
-
 exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event => {
     const attributes = event.data.attributes;
     const deviceId = attributes['deviceId'];
@@ -221,22 +219,16 @@ exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event =>
     ]);
   });
 
-/**
- * Maintain last status in firebase
-*/
-function updateCurrentDataFirebase(deviceId, data) {
-  var updateData = {};
-  updateData[`deviceusers/${deviceId}`] = data;
-  updateData[`userdevices/userid`] = data;
-  admin.database().ref('deviceusers').child(deviceId).update({'lastseen': admin.database.ServerValue.TIMESTAMP});
-  return admin.database().ref().update(updateData);
+// Maintain last status in firebase
 
-  // return admin.database().ref('deviceusers').child(deviceId).update(data).then(function() {
-  //    return admin.database().ref('userdevices/userid').child(deviceId).update(data).then(function() {
-  // }, function(error) {
-  //    console.log("Error: " + error);
-  // });
+function updateCurrentDataFirebase(deviceId, data) {
+  return admin.database().ref('deviceusers/'+deviceId).on('value', function(snapshot) {
+    const users = snapshot.val()
+    Object.keys(users).forEach(function(id) {
+      // console.log(key);
+      admin.database().ref('userdevices/'+id).child(deviceId).update({'lastseen': admin.database.ServerValue.TIMESTAMP});
+      return admin.database().ref('userdevices/'+id).child(deviceId).update(data)
+    });
+  });
+
 }
-// go deviceusers/deviceid=>forEach (userid) {
-//  userdevices/userid/deviceid=>update(data)
-// }

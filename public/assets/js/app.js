@@ -165,9 +165,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       $('#removeDevice').modal('hide');
     }
   }).filter('filter', function($filter) {
-
     return function(input) {
-
       var date = new Date(input);
       return ($filter('date')(date, 'EEE MMM dd yyyy HH:mm:ss'));
     }
@@ -212,7 +210,7 @@ angular.module('sopApp', ['firebase', 'ngRoute'])
       info(marker, value);
       $scope.markers.push(marker);
     }
-
+    
     function info(marker, value) {
       // $scope.position.lat = value.position[0];
       // $scope.position.lng = value.position[1];
