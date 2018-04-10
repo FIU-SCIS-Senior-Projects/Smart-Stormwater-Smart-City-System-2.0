@@ -102,7 +102,7 @@ angular.module('sopApp')
       };
 
       if (newDeviceId) { //Add custom id
-        ref.child(newDeviceId).set(device);
+        //ref.child(newDeviceId).set(device);
 
         mainUserDevicesRef.child(newDeviceId).set(device);
 
@@ -115,7 +115,8 @@ angular.module('sopApp')
             'lastname': user.lastname,
             'phoneNumber': user.phoneNumber,
             'role': user.role,
-            'department': user.department
+            'department': user.department,
+            'email': user.email
           });
         });
 
