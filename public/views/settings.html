@@ -9,17 +9,13 @@
           </div>
           <div class="card-content">
             <form name="settingsForm" ng-submit="settingsCtrl.updateNotificationSettings()">
-              <div class="row">
+              <div class="row" style="margin-left:10px">
                 <p>
                   <input type="checkbox" value="{{settingsCtrl.user.settings.emailNotification}}" ng-model="settingsCtrl.user.settings.emailNotification"> Email Notifications
                 </p>
-              </div>
-              <div class="row">
                 <p>
                   <input type="checkbox" value="{{settingsCtrl.user.settings.smsNotification}}" ng-model="settingsCtrl.user.settings.smsNotification"> SMS Notifications
                 </p>
-              </div>
-              <div class="row">
                 <p>
                   <input type="number" value="{{settingsCtrl.user.settings.fillLevel}}" min="60" max="100" step="5" ng-model="settingsCtrl.user.settings.fillLevel"> Fill Level
                 </p>
