@@ -10,6 +10,7 @@ angular.module('sopApp')
     userCtrl.myDevices = Devices.getMainDevices();
     var origDevices = null;
     var origSelectedUser = null;
+    var origNewUser = null;
 
     userCtrl.newUser = {
       email: '',
@@ -122,6 +123,14 @@ angular.module('sopApp')
 
     userCtrl.unselectSubusers = function() {
       Users.unselectSubusers();
+    };
+
+    userCtrl.showNewUser = function(){
+      origNewUser = angular.copy(userCtrl.newUser);
+    };
+
+    userCtrl.cancelNewUser = function(){
+      userCtrl.newUser = origNewUser;
     };
 
   });
