@@ -74,11 +74,11 @@ In the in Smart-Stormwater-Smart-City-System-2.0 folder, run
 ```
 $ firebase init
 ```
-Then run
+Then run to deploy the webapp files and the functions files.
 ```
 $ firebase deploy
 ```
-to deploy the webapp files and the functions files.  To deploy only webapp files, run
+To deploy only webapp files, run
 ```
 $ firebase deploy --only hosting
 ```
