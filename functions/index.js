@@ -11,23 +11,40 @@ const mailTransport = nodemailer.createTransport({
 });
 const APP_NAME = 'SOP Systems';
 
-exports.sendEmailAlert = functions.database.ref('/userdevices').onUpdate((event) => {
-  // const user = event.data; // The Firebase user.
-  const email = event.data.email; // The email of the user.
-  const displayName = event.data.name; // The display name of the user.
-  console.log(event);
-  // return sendEmailAlert(email, displayName);
+exports.sendEmailAlert = functions.database.ref('/userdevices/{pudhId}').onUpdate((event) => {
+  const obj = event.data.val();
+  const userId = event.data.ref.key;
+  const devices = Object.getOwnPropertyNames(obj);
+  return Object.keys(obj).map(i => obj[i]).forEach((device, id) => {
+    // console.log("id: ", devices[id]);
+    // console.log("val: ", val.filled);
+    admin.database().ref('users/'+userId).on('value', function(snapshot) {
+      const info = snapshot.val();
+      const myLevel = info.settings.fillLevel;
+      const displayName = info.firstname;
+      const email = info.email;
+      if(info.settings.emailNotification && (device.filled >= myLevel)) {
+        const data = {"date":admin.database.ServerValue.TIMESTAMP, "device":devices[id], "fillLevel":device.filled};
+        admin.database().ref('notifications/'+userId).child(devices[id]).set(data);
+        return Promise.all([sendEmailAlert(email, displayName, devices[id], device.filled)]);
+      }
+      else return 0;
+    });
+  });
 });
 
-function sendEmailAlert(email, displayName) {
+function sendEmailAlert(email, displayName, deviceId, level) {
   const mailOptions = {
-    from: `${APP_NAME} <noreply@broadcastapp-1119.firebaseapp.com>`,
+    from: `${APP_NAME} <noreply@yourapp.firebaseapp.com>`,
     to: email,
   };
   mailOptions.subject = `Alert from your ${APP_NAME} device!`;
-  mailOptions.text = `Hey ${displayName || ''}! Welcome to ${APP_NAME}. Your device alert!.`;
-  return mailTransport.sendMail(mailOptions).then(() => {
-    return console.log('New alert email sent to:', email);
+  mailOptions.text = `Hey ${displayName || ''}! Your device ${deviceId} is ${level}% filled.`;
+  return new Promise((resolve, reject) => {
+    mailTransport.sendMail(mailOptions).then(() => {
+      console.log('New alert email sent to:', email);
+      resolve(true);
+    });
   });
 }
 
@@ -189,6 +206,12 @@ exports.listAllUsers = functions.https.onRequest((req, res) => {
   });
 });
 
+exports.addIotDevice = functions.https.onRequest((req, res) => {
+  // cors(req, res, () => {
+    
+  // });
+});
+
 exports.deleteUser = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
     admin.auth().deleteUser(req.body.uid)
@@ -210,7 +233,7 @@ exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event =>
     const pubSubMessage = event.data;
     // Decode the PubSub Message body.
     const messageBody = pubSubMessage.data ? Buffer.from(pubSubMessage.data,'base64').toString() : null;
-    // console.log(JSON.parse(messageBody));
+    console.log("Message: ",JSON.parse(messageBody));
     const data = JSON.parse(messageBody);
     // var location = [parseFloat(data[1]), parseFloat(data[2])];
 
@@ -220,14 +243,13 @@ exports.receiveTelemetry = functions.pubsub.topic('fiu-test').onPublish(event =>
   });
 
 // Maintain last status in firebase
-
 function updateCurrentDataFirebase(deviceId, data) {
   return admin.database().ref('deviceusers/'+deviceId).on('value', function(snapshot) {
     const users = snapshot.val()
-    Object.keys(users).forEach(function(id) {
+    return Object.keys(users).forEach(function(id) {
       // console.log(key);
       admin.database().ref('userdevices/'+id).child(deviceId).update({'lastseen': admin.database.ServerValue.TIMESTAMP});
-      return admin.database().ref('userdevices/'+id).child(deviceId).update(data)
+      admin.database().ref('userdevices/'+id).child(deviceId).update(data)
     });
   });
 
