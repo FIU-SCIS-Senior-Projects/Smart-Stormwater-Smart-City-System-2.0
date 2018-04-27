@@ -1,0 +1,62 @@
+<div class="content" style="margin-top: 100px">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header" data-background-color="purple">
+            <div class="row">
+              <div class="col-md-6">
+                <h4 class="title">Notifications</h4>
+                <p class="category">View notifications</p>
+              </div>
+              <div class="col-md-6">
+                <div class="dropdown pull-right">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    <b>Actions</b>
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <form>
+                        <label>Sort by: </label>
+                        <select class="selectpicker" style="color:black" ng-model="notificationCtrl.sortOrder">
+                          <option value="+date">Date: Low to High</option>
+                          <option value="-date">Date: High to Low</option>
+                          <option value="+device">Device: Low to High</option>
+                          <option value="-device">Device: High to Low</option>
+                          <option value="+fillLevel">Fill Level: Low to High</option>
+                          <option value="-fillLevel">Fill Level: High to Low</option>
+                        </select>
+                      </form>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li><label>Filter by device: </label></li>
+                    <li ng-repeat="dev in notificationCtrl.devices">
+                      <label><input type="checkbox"  style="margin-left:15px" value="{{dev.selected}}" ng-model="dev.selected" ng-change="notificationCtrl.unselectSubusers()"><b>  {{dev.$id}}</b></label>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-content table-responsive">
+            <table class="table">
+              <thead class="text-primary">
+                <th>Device</th>
+                <th>Date</th>
+                <th>Fill Level</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="not in notificationCtrl.notifications | orderBy:notificationCtrl.sortOrder | deviceFilter:notificationCtrl.devices">
+                  <td>{{not.device}}</td>
+                  <td>{{not.date | filter}}</td>
+                  <td>{{not.fillLevel}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
